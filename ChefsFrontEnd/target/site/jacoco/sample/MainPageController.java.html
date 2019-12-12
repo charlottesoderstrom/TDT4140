@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="nb"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MainPageController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ChefsFrontEnd</a> &gt; <a href="index.source.html" class="el_package">sample</a> &gt; <span class="el_source">MainPageController.java</span></div><h1>MainPageController.java</h1><pre class="source lang-java linenums">package sample;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
+import java.util.HashMap;
+import java.util.List;
+
+/**
+ * Kontrollerer forsiden (mainPage.fxml).
+ * Behandler alle knapper på forsiden.
+ * Forsyner RecipeController med et og et recipe-objekt (én og én oppskrift).
+ * Passer på at frontend har kontroll på en eventuell bruker og hvilke tilganger denne brukeren skal ha.
+ */
+<span class="nc" id="L17">public class MainPageController extends Controll {</span>
+
+    private Content content;
+<span class="nc" id="L20">    private int pageCounter = 1; //Holder styr på hvilken &quot;side&quot; man har bladd til på forsiden.</span>
+<span class="nc" id="L21">    private int verifiedPageCounter = 1;</span>
+    private RecipeController recipeController;
+    private WriteRecipeController writeRecipeController;
+
+    /**
+     * Holder på de oppskriftene (Recipe-objektene) som til enhver tid vises på forsiden (mainPage.fxml).
+     */
+<span class="nc" id="L28">    private HashMap&lt;Integer, Recipe&gt; recipes = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L29">    private HashMap&lt;Integer, Recipe&gt; verifiedrecipes = new HashMap&lt;&gt;();</span>
+
+
+    //FrontPage
+    @FXML
+    private Button button1;
+    @FXML
+    private Button button2;
+    @FXML
+    private Button button3;
+    @FXML
+    private Button button4;
+    @FXML
+    private TextField textFieldSearch;
+    @FXML
+    private Button nextPage;
+    @FXML
+    private Button previousPage;
+    @FXML
+    private Button reloadbutton;
+
+    //ChefsRecommendations
+    @FXML
+    private Button chefButton1;
+    @FXML
+    private Button chefButton2;
+    @FXML
+    private Button chefButton3;
+    @FXML
+    private Button chefButton4;
+    @FXML
+    private TextField chefTextFieldSearch;
+    @FXML
+    private Button chefNextPage;
+    @FXML
+    private Button chefPreviousPage;
+    @FXML
+    private Button chefReloadbutton;
+
+
+    @FXML
+    private Button signup;
+    @FXML
+    private Button login;
+    @FXML
+    private Text userStatus;
+    @FXML
+    private Tab addRecipeTab;
+    @FXML
+    private Button adminAddRecipes;
+    @FXML
+    private Text addRecipesFromAPI;
+    @FXML
+    private Text writeNumberBetween1and100;
+    @FXML
+    private TextField adminRecipeCount;
+
+
+    /**
+     * Setter Content-referanse.
+     * @param content
+     * @see Content
+     */
+    public void setContent(Content content){
+<span class="nc" id="L93">        this.content = content;</span>
+<span class="nc" id="L94">    }</span>
+
+
+    /**
+     * Setter RecipeController-referanse.
+     * @param recipeController
+     * @see RecipeController
+     */
+    public void setRecipeController(RecipeController recipeController) {
+<span class="nc" id="L103">        this.recipeController = recipeController;</span>
+<span class="nc" id="L104">    }</span>
+
+
+    /**
+     * Setter WriteRecipeController-referanse.
+     * @param controller
+     * @see WriteRecipeController
+     */
+    public void setWriteRecipeController(WriteRecipeController controller){
+<span class="nc" id="L113">        this.writeRecipeController = controller;</span>
+<span class="nc" id="L114">    }</span>
+
+
+    /**
+     * *Setter pageCounter.
+     * @param counter
+     */
+    public void setPageCounter(int counter){
+<span class="nc" id="L122">        this.pageCounter = counter;</span>
+<span class="nc" id="L123">    }</span>
+
+
+    /**
+     * Henter 4 nye oppskrifter (Recipe) fra Content og putter de i en HashMap.
+     * @see Recipe
+     */
+    private void fetchContent(){
+<span class="nc" id="L131">        List&lt;Recipe&gt; recipes = this.content.get4Recipies();</span>
+<span class="nc" id="L132">        this.recipes.clear();</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">        for (int i = 0; i &lt; recipes.size(); i++){</span>
+<span class="nc" id="L134">            this.recipes.put(i+1, recipes.get(i)); //Hashmap = &lt;ID, Recipe&gt;</span>
+        }
+<span class="nc" id="L136">    }</span>
+
+
+    /**
+     * Oppdaterer forsiden (mainPage.fxml).
+     */
+    public void updateFxml(){
+<span class="nc" id="L143">        this.fetchContent();</span>
+<span class="nc" id="L144">        this.updateButton(this.button1, 1);</span>
+<span class="nc" id="L145">        this.updateButton(this.button2, 2);</span>
+<span class="nc" id="L146">        this.updateButton(this.button3, 3);</span>
+<span class="nc" id="L147">        this.updateButton(this.button4, 4);</span>
+<span class="nc" id="L148">    }</span>
+
+
+    /**
+     * Oppdaterer en bestemt knapp på forsiden (mainPage.fxml). Skjuler knapper som ikke trengs.
+     * @param button
+     * @param buttonId
+     */
+    private void updateButton(Button button, int buttonId){
+<span class="nc bnc" id="L157" title="All 2 branches missed.">        if (this.recipes.containsKey(buttonId)){</span>
+<span class="nc" id="L158">            button.setText(this.recipes.get(buttonId).getTitle());</span>
+<span class="nc" id="L159">            button.setVisible(true);</span>
+<span class="nc" id="L160">            return;</span>
+        }
+<span class="nc" id="L162">        button.setVisible(false);</span>
+<span class="nc" id="L163">    }</span>
+
+
+    /**
+     * Tar inn søketekst fra bruker og sender videre til Content.
+     * @see Content
+     */
+    @FXML
+    public void handleSearch(){
+<span class="nc" id="L172">        String searchText = this.textFieldSearch.getText();</span>
+
+        // Gi søketeksten videre til content
+<span class="nc" id="L175">        this.content.doIngredientSearch(searchText);</span>
+<span class="nc" id="L176">        System.out.println(searchText);</span>
+
+<span class="nc" id="L178">        this.pageCounter = 1;</span>
+
+        // Oppdater forsiden
+<span class="nc" id="L181">        this.updateFxml();</span>
+<span class="nc" id="L182">        this.hidePreviousPageButton();</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">        if (this.content.recipes.size() &lt;= 4){</span>
+<span class="nc" id="L184">            this.hideNextPageButton();</span>
+        } else {
+<span class="nc" id="L186">            this.showNextPageButton();</span>
+        }
+<span class="nc" id="L188">    }</span>
+
+
+    /**
+     * Sender bruker til siden for å registrere seg (signup.fxml).
+     */
+    @FXML
+    public void handlesignupbutton(){
+<span class="nc" id="L196">        super.getStage().setScene(FXMLMain.signUpPage);</span>
+<span class="nc" id="L197">    }</span>
+
+
+    /**
+     * Behandler login/logout-knappen.
+     * Dersom man er logget inn vil man bli logget ut, dvs. at logout-knappen blir til en login-knapp.
+     * Dersom man ikke er logget inn vil man bli sendt til siden for å logge inn (Login.fxml).
+     */
+    @FXML
+    public void handleloginbutton() {
+<span class="nc bnc" id="L207" title="All 2 branches missed.">        if (this.signup.isVisible()) {</span>
+<span class="nc" id="L208">            super.getStage().setScene(FXMLMain.logInPageScene);</span>
+<span class="nc" id="L209">            return;</span>
+        }
+<span class="nc" id="L211">        this.login.setText(&quot;Login&quot;);</span>
+<span class="nc" id="L212">        this.signup.setVisible(true);</span>
+<span class="nc" id="L213">        this.userStatus.setText(&quot;&quot;);</span>
+<span class="nc" id="L214">        this.recipeController.hideDeleteButton();</span>
+<span class="nc" id="L215">        this.hideRecipeTab();</span>
+<span class="nc" id="L216">        this.writeRecipeController.setUser(null);</span>
+
+<span class="nc" id="L218">    }</span>
+
+
+
+    // Denne metoden blir også kalt når bruker har registrert seg (signup) for da blir man automatisk innlogget.
+
+    /**
+     * Behandler en innlogging for en bruker.
+     * Login-knappen vil bli til en logout-knapp og signup-knappen vil forsvinne.
+     * Gir brukeren en tilbakemelding på at man nå er logget inn.
+     * Gir alle innloggede brukere tilgang til å legge til nye oppskrifter.
+     * Gir admin-rettigheter hvis bruker er admin.
+     * @param user bruker-objektet
+     */
+    public void userLoggedIn(User user){
+<span class="nc" id="L233">        this.login.setText(&quot;Logout&quot;);</span>
+<span class="nc" id="L234">        this.signup.setVisible(false);</span>
+<span class="nc" id="L235">        this.userStatus.setText(&quot;Hei &quot;+ user.getUsername() + &quot;!&quot;);</span>
+<span class="nc" id="L236">        this.writeRecipeController.setUser(user);</span>
+
+        // Admin skal ha rettigheter til å slette oppskrifter og legge til mange oppskrifter fra API.
+<span class="nc bnc" id="L239" title="All 2 branches missed.">        if (user.getRole().equals(&quot;admin&quot;)){</span>
+<span class="nc" id="L240">            this.adminAddRecipes.setVisible(true);</span>
+<span class="nc" id="L241">            this.recipeController.showDeleteButton();</span>
+<span class="nc" id="L242">            this.addRecipesFromAPI.setText(&quot;Add recipies from API&quot;);</span>
+<span class="nc" id="L243">            this.writeNumberBetween1and100.setText(&quot;Write a number between 1-100&quot;);</span>
+<span class="nc" id="L244">            this.adminRecipeCount.setVisible(true);</span>
+<span class="nc" id="L245">            this.adminAddRecipes.setVisible(true);</span>
+        }
+        // Når man er logget inn skal man ha tilgang til fanen for å skrive recipes, uansett hvordan bruker man er.
+<span class="nc" id="L248">        this.showRecipeTab();</span>
+<span class="nc" id="L249">    }</span>
+
+
+    /**
+     * Nekter bruker tilgang til fanen for å legge til oppskrifter.
+     */
+    public void hideRecipeTab() {
+<span class="nc" id="L256">        this.adminAddRecipes.setVisible(false); // Hver gang fanen skjules skal adminAddRecipes også skjules.</span>
+<span class="nc" id="L257">        this.addRecipesFromAPI.setText(&quot;&quot;);</span>
+<span class="nc" id="L258">        this.writeNumberBetween1and100.setText(&quot;&quot;);</span>
+<span class="nc" id="L259">        this.adminRecipeCount.setVisible(false);</span>
+<span class="nc" id="L260">        this.addRecipeTab.setDisable(true);</span>
+<span class="nc" id="L261">    }</span>
+
+
+    /**
+     * Gir bruker tilgang til fane for å legge til oppskrifter.
+     */
+    public void showRecipeTab(){
+<span class="nc" id="L268">        this.addRecipeTab.setDisable(false);</span>
+<span class="nc" id="L269">    }</span>
+
+    /**
+     * Behandler klikk på oppskrift (Recipe).
+     * Sender bruker til siden for en oppskrift.
+     */
+    @FXML
+    public void handleButton1(){
+<span class="nc" id="L277">        this.recipeController.updateRecipePage(this.recipes.get(1));</span>
+<span class="nc" id="L278">        super.getStage().setScene(FXMLMain.recipePageScene);</span>
+<span class="nc" id="L279">    }</span>
+
+
+    /**
+     * Behandler klikk på oppskrift (Recipe).
+     * Sender bruker til siden for en oppskrift.
+     */
+    @FXML
+    public void handleButton2(){
+<span class="nc" id="L288">        this.recipeController.updateRecipePage(this.recipes.get(2));</span>
+<span class="nc" id="L289">        this.setRecipeScene();</span>
+<span class="nc" id="L290">    }</span>
+
+
+    /**
+     * Behandler klikk på oppskrift (Recipe).
+     * Sender bruker til siden for en oppskrift.
+     */
+    @FXML
+    public void handleButton3(){
+<span class="nc" id="L299">        this.recipeController.updateRecipePage(this.recipes.get(3));</span>
+<span class="nc" id="L300">        this.setRecipeScene();</span>
+<span class="nc" id="L301">    }</span>
+
+    /**
+     * Behandler klikk på oppskrift (Recipe).
+     * Sender bruker til siden for en oppskrift.
+     */
+    @FXML
+    public void handleButton4(){
+<span class="nc" id="L309">        this.recipeController.updateRecipePage(this.recipes.get(4));</span>
+<span class="nc" id="L310">        this.setRecipeScene();</span>
+<span class="nc" id="L311">    }</span>
+
+
+    /**
+     * Behandler knapp for å refreshe forsiden med oppskrifter (mainPage.fxml).
+     */
+    @FXML
+    public void handleReload(){ //Laster inn alle nye oppskrifter på nytt.
+<span class="nc" id="L319">        this.content.loadRecipies();</span>
+<span class="nc" id="L320">        this.textFieldSearch.clear();</span>
+<span class="nc" id="L321">        this.pageCounter = 1;</span>
+<span class="nc" id="L322">        this.verifiedPageCounter = 1;</span>
+<span class="nc" id="L323">        this.hidePreviousPageButton();</span>
+<span class="nc" id="L324">        this.showNextPageButton();</span>
+<span class="nc" id="L325">        this.updateFxml();</span>
+<span class="nc" id="L326">    }</span>
+
+
+
+    /**
+     * Laster inn 4 nye oppskrifter, eller 4 nye resultater på et søk.
+     */
+    @FXML
+    public void handleNextPage(){
+<span class="nc" id="L335">        this.showPreviousPageButton();</span>
+<span class="nc" id="L336">        this.updateFxml();</span>
+<span class="nc" id="L337">        this.pageCounter++;</span>
+<span class="nc" id="L338">        System.out.println(this.pageCounter);</span>
+<span class="nc" id="L339">    }</span>
+
+
+    /**
+     * Laster inn de 4 forrige oppskriftene som ble vist, eventuelt de 4 forrige resultatene på et søk.s
+     */
+    @FXML
+    public void handlePreviousPage(){
+<span class="nc" id="L347">        this.content.previousContent();</span>
+<span class="nc" id="L348">        this.showNextPageButton();</span>
+<span class="nc" id="L349">        this.updateFxml();</span>
+<span class="nc" id="L350">        this.pageCounter--;</span>
+<span class="nc" id="L351">        System.out.println(this.pageCounter);</span>
+<span class="nc bnc" id="L352" title="All 2 branches missed.">        if (this.pageCounter &lt;= 1){</span>
+<span class="nc" id="L353">            this.hidePreviousPageButton();</span>
+        }
+<span class="nc" id="L355">    }</span>
+
+    /**
+     * Viser knapp for å gå til forrige side når man browser oppskrifter.
+     */
+    public void showPreviousPageButton(){
+<span class="nc" id="L361">        this.previousPage.setVisible(true);</span>
+<span class="nc" id="L362">    }</span>
+
+
+    /**
+     * Skjuler knapp for å gå til forrige side når man browser oppskrifter.
+     */
+    public void hidePreviousPageButton(){
+<span class="nc" id="L369">        this.previousPage.setVisible(false);</span>
+<span class="nc" id="L370">    }</span>
+
+
+    /**
+     * Viser knapp for å gå til neste side når man browser oppskrifter.
+     */
+    public void showNextPageButton(){
+<span class="nc" id="L377">        this.nextPage.setVisible(true);</span>
+<span class="nc" id="L378">    }</span>
+
+
+    /**
+     * Skjuler knapp for å gå til neste side når man browser oppskrifter.
+     */
+    public void hideNextPageButton(){
+<span class="nc" id="L385">        this.nextPage.setVisible(false);</span>
+<span class="nc" id="L386">    }</span>
+
+
+
+
+    //ChefsRecommendations
+    /**
+     * Behandler klikk på oppskrift (Recipe).
+     * Sender bruker til siden for en oppskrift.
+     */
+    @FXML
+    public void handleChefButton1(){
+<span class="nc" id="L398">        this.recipeController.updateRecipePage(this.verifiedrecipes.get(1));</span>
+<span class="nc" id="L399">        super.getStage().setScene(FXMLMain.recipePageScene);</span>
+<span class="nc" id="L400">    }</span>
+
+
+    /**
+     * Behandler klikk på oppskrift (Recipe).
+     * Sender bruker til siden for en oppskrift.
+     */
+    @FXML
+    public void handleChefButton2(){
+<span class="nc" id="L409">        this.recipeController.updateRecipePage(this.verifiedrecipes.get(2));</span>
+<span class="nc" id="L410">        this.setRecipeScene();</span>
+<span class="nc" id="L411">    }</span>
+
+
+    /**
+     * Behandler klikk på oppskrift (Recipe).
+     * Sender bruker til siden for en oppskrift.
+     */
+    @FXML
+    public void handleChefButton3(){
+<span class="nc" id="L420">        this.recipeController.updateRecipePage(this.verifiedrecipes.get(3));</span>
+<span class="nc" id="L421">        this.setRecipeScene();</span>
+<span class="nc" id="L422">    }</span>
+
+    /**
+     * Behandler klikk på oppskrift (Recipe).
+     * Sender bruker til siden for en oppskrift.
+     */
+    @FXML
+    public void handleChefButton4(){
+<span class="nc" id="L430">        this.recipeController.updateRecipePage(this.verifiedrecipes.get(4));</span>
+<span class="nc" id="L431">        this.setRecipeScene();</span>
+<span class="nc" id="L432">    }</span>
+
+
+    /**
+     * Behandler knapp for å refreshe forsiden med oppskrifter (mainPage.fxml).
+     */
+    @FXML
+    public void handleChefReload(){ //Laster inn alle nye oppskrifter på nytt.
+<span class="nc" id="L440">        this.content.loadVerifiedRecipies();</span>
+<span class="nc" id="L441">        this.chefTextFieldSearch.clear();</span>
+<span class="nc" id="L442">        this.verifiedPageCounter = 1;</span>
+<span class="nc" id="L443">        this.hideChefPreviousPageButton();</span>
+<span class="nc" id="L444">        this.showChefNextPageButton();</span>
+<span class="nc" id="L445">        this.updateChefFxml();</span>
+<span class="nc" id="L446">    }</span>
+
+    @FXML
+    public void handleChefSearch(){
+<span class="nc" id="L450">        String searchText = this.chefTextFieldSearch.getText();</span>
+
+        // Gi søketeksten videre til content
+<span class="nc" id="L453">        this.content.doVerifiedIngredientSearch(searchText);</span>
+<span class="nc" id="L454">        System.out.println(searchText);</span>
+<span class="nc" id="L455">        this.verifiedPageCounter = 1;</span>
+        // Oppdater Chefs Recommendations
+<span class="nc" id="L457">        this.updateChefFxml();</span>
+<span class="nc" id="L458">        this.hideChefPreviousPageButton();</span>
+<span class="nc bnc" id="L459" title="All 2 branches missed.">        if (this.content.verifiedRecipes.size() &lt;= 4){</span>
+<span class="nc" id="L460">            this.hideChefNextPageButton();</span>
+        } else {
+<span class="nc" id="L462">        this.showChefNextPageButton();</span>
+        }
+<span class="nc" id="L464">    }</span>
+
+    public void updateChefFxml(){
+<span class="nc" id="L467">        this.fetchVerifiedContent();</span>
+<span class="nc" id="L468">        this.updateVerifiedButton(this.chefButton1, 1);</span>
+<span class="nc" id="L469">        this.updateVerifiedButton(this.chefButton2, 2);</span>
+<span class="nc" id="L470">        this.updateVerifiedButton(this.chefButton3, 3);</span>
+<span class="nc" id="L471">        this.updateVerifiedButton(this.chefButton4, 4);</span>
+<span class="nc" id="L472">    }</span>
+
+    /**
+     * Oppdaterer en bestemt knapp på forsiden (mainPage.fxml). Skjuler knapper som ikke trengs.
+     * @param button
+     * @param buttonId
+     */
+    private void updateVerifiedButton(Button button, int buttonId){
+<span class="nc bnc" id="L480" title="All 2 branches missed.">        if (this.verifiedrecipes.containsKey(buttonId)){</span>
+<span class="nc" id="L481">            button.setText(this.verifiedrecipes.get(buttonId).getTitle());</span>
+<span class="nc" id="L482">            button.setVisible(true);</span>
+<span class="nc" id="L483">            return;</span>
+        }
+<span class="nc" id="L485">        button.setVisible(false);</span>
+<span class="nc" id="L486">    }</span>
+
+    private void fetchVerifiedContent(){
+<span class="nc" id="L489">        List&lt;Recipe&gt; verifiedrecipes = this.content.get4VerifiedRecipies();</span>
+<span class="nc" id="L490">        this.verifiedrecipes.clear();</span>
+<span class="nc bnc" id="L491" title="All 2 branches missed.">        for (int i = 0; i &lt; verifiedrecipes.size(); i++){</span>
+<span class="nc" id="L492">            this.verifiedrecipes.put(i+1, verifiedrecipes.get(i)); //Hashmap = &lt;ID, Recipe&gt;</span>
+        }
+<span class="nc" id="L494">    }</span>
+
+    /**
+     * Laster inn 4 nye oppskrifter, eller 4 nye resultater på et søk.
+     */
+    @FXML
+    public void handleChefNextPage(){
+<span class="nc" id="L501">        this.showChefPreviousPageButton();</span>
+<span class="nc" id="L502">        this.updateChefFxml();</span>
+<span class="nc" id="L503">        this.verifiedPageCounter++;</span>
+<span class="nc" id="L504">        System.out.println(&quot;Verified Pageindex: &quot; + this.verifiedPageCounter);</span>
+<span class="nc" id="L505">    }</span>
+
+
+    /**
+     * Laster inn de 4 forrige oppskriftene som ble vist, eventuelt de 4 forrige resultatene på et søk.s
+     */
+    @FXML
+    public void handleChefPreviousPage(){
+<span class="nc" id="L513">        this.content.previousVerifiedContent();</span>
+<span class="nc" id="L514">        this.showChefNextPageButton();</span>
+<span class="nc" id="L515">        this.updateChefFxml();</span>
+<span class="nc" id="L516">        this.verifiedPageCounter--;</span>
+<span class="nc" id="L517">        System.out.println(&quot;Verified Pageindex: &quot; + this.verifiedPageCounter);</span>
+<span class="nc bnc" id="L518" title="All 2 branches missed.">        if (this.verifiedPageCounter &lt;= 1){</span>
+<span class="nc" id="L519">            this.hideChefPreviousPageButton();</span>
+        }
+<span class="nc" id="L521">    }</span>
+
+
+    /**
+     * Viser knapp for å gå til forrige side når man browser oppskrifter.
+     */
+    public void showChefPreviousPageButton(){
+<span class="nc" id="L528">        this.chefPreviousPage.setVisible(true);</span>
+<span class="nc" id="L529">    }</span>
+
+
+    /**
+     * Skjuler knapp for å gå til forrige side når man browser oppskrifter.
+     */
+    public void hideChefPreviousPageButton(){
+<span class="nc" id="L536">        this.chefPreviousPage.setVisible(false);</span>
+<span class="nc" id="L537">    }</span>
+
+
+    /**
+     * Viser knapp for å gå til neste side når man browser oppskrifter.
+     */
+    public void showChefNextPageButton(){
+<span class="nc" id="L544">        this.chefNextPage.setVisible(true);</span>
+<span class="nc" id="L545">    }</span>
+
+
+    /**
+     * Skjuler knapp for å gå til neste side når man browser oppskrifter.
+     */
+    public void hideChefNextPageButton(){
+<span class="nc" id="L552">        this.chefNextPage.setVisible(false);</span>
+<span class="nc" id="L553">    }</span>
+
+
+    // Hjelpemetode for handleButton1, 2, 3 og 4. Setter stage til recipe.fxml.
+<span class="nc" id="L557">    private void setRecipeScene(){ super.getStage().setScene(FXMLMain.recipePageScene); }</span>
+
+
+    //Add recipe-fane
+
+    /**
+     * Sender bruker til side for å skrive nye oppskrifter.
+     */
+    @FXML
+    private void handleWriteRecipeButton(){
+<span class="nc" id="L567">        super.getStage().setScene(FXMLMain.writeRecipePage);</span>
+<span class="nc" id="L568">    }</span>
+
+
+    /**
+     * Behandler knapp for å legge til mange oppskrifter fra API.
+     * Tar inn et nummer n mellom 1 og 100 og legger til n oppskrifter til databasen.
+     */
+    @FXML
+    private void handleAdminAddRecipeButton() {
+<span class="nc" id="L577">        int num = Integer.parseInt(this.adminRecipeCount.getText());</span>
+<span class="nc bnc" id="L578" title="All 4 branches missed.">        if(num&lt;1 || num&gt;100) {</span>
+<span class="nc" id="L579">            AlertBox.display(&quot;Warning&quot;, &quot;Number of recipes must be between 1-100&quot;);</span>
+        }
+        else{
+<span class="nc" id="L582">            Client.addManyRecipes(num);</span>
+<span class="nc" id="L583">            AlertBox.display(&quot;Success!&quot;, num+&quot; recipes was added&quot;);</span>
+        }
+<span class="nc" id="L585">        this.adminRecipeCount.clear();</span>
+<span class="nc" id="L586">        System.out.println(num);</span>
+
+<span class="nc" id="L588">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

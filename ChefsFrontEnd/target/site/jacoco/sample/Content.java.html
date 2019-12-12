@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="nb"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Content.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ChefsFrontEnd</a> &gt; <a href="index.source.html" class="el_package">sample</a> &gt; <span class="el_source">Content.java</span></div><h1>Content.java</h1><pre class="source lang-java linenums">package sample;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Content {
+
+    private MainPageController mainPageController;
+    protected List&lt;Recipe&gt; recipes;
+    protected ArrayList&lt;Recipe&gt; verifiedRecipes;
+<span class="nc" id="L12">    private int indexCounter = 0;</span>
+<span class="nc" id="L13">    private int verifiedIndexCounter = 0;</span>
+    /**
+     * Forsyner kontrollerne med oppskrifter. Må inneholde metoder for å videreformidle spørringer (søk) fra brukere.
+     * @param recipes holder på alle oppskriftene som er lastet ned lokalt
+     * @param indexCounter holder til en hver tid styr på indexen til den første av de fire oppskriftene som vises på forsiden.
+     */
+
+<span class="nc" id="L20">    public Content(){</span>
+<span class="nc" id="L21">        this.recipes = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L22">        this.verifiedRecipes = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L23">    }</span>
+
+    public void setMainPageController(MainPageController mainPageController){
+<span class="nc" id="L26">        this.mainPageController = mainPageController;</span>
+<span class="nc" id="L27">    }</span>
+
+    public void doIngredientSearch(String ingredients) {
+<span class="nc" id="L30">        this.recipes = Client.getRecipeByIngredients(ingredients);</span>
+<span class="nc" id="L31">        this.indexCounter = 0;</span>
+<span class="nc" id="L32">    }</span>
+
+    public void doVerifiedIngredientSearch(String ingredients) {
+<span class="nc" id="L35">        this.verifiedRecipes = Client.getVerifiedRecipesByIngredients(ingredients);</span>
+<span class="nc" id="L36">        this.verifiedIndexCounter = 0;</span>
+<span class="nc" id="L37">    }</span>
+
+    public void loadRecipies(){
+<span class="nc" id="L40">        this.recipes = Client.getRecipes();</span>
+<span class="nc" id="L41">        this.indexCounter = 0;</span>
+<span class="nc" id="L42">    }</span>
+
+    public void loadVerifiedRecipies() {
+<span class="nc" id="L45">        this.verifiedRecipes = Client.getVerifiedRecipes();</span>
+<span class="nc" id="L46">        this.verifiedIndexCounter = 0;</span>
+<span class="nc" id="L47">    }</span>
+
+    public boolean registerUser(User user) {
+<span class="nc" id="L50">        return Client.registerUser(user);</span>
+    }
+
+
+    public List&lt;Recipe&gt; getRecipesList(){
+<span class="nc" id="L55">        return this.recipes;</span>
+    } //returnerer alle oppskriftene
+
+
+    //returnerer 4 eller mindre oppskrifter, for å gi til mainPageController.
+    public List&lt;Recipe&gt; get4Recipies() {
+<span class="nc" id="L61">        List&lt;Recipe&gt; recipes = new ArrayList&lt;Recipe&gt;();</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        for (int i = this.indexCounter; i &lt; this.indexCounter+4; i++){</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">            if (i &lt; this.recipes.size()) {</span>
+<span class="nc" id="L64">                recipes.add(this.recipes.get(i));</span>
+            }
+        }
+<span class="nc" id="L67">        this.indexCounter += 4;</span>
+<span class="nc" id="L68">        System.out.println(this.recipes.size());</span>
+<span class="nc" id="L69">        System.out.println(this.indexCounter);</span>
+
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        if (this.indexCounter &gt;= this.recipes.size()){</span>
+<span class="nc" id="L72">            this.mainPageController.showPreviousPageButton();</span>
+<span class="nc" id="L73">            this.mainPageController.hideNextPageButton();</span>
+        }
+
+<span class="nc" id="L76">        return recipes;</span>
+    }
+
+    //returnerer 4 eller mindre verifiserte oppskrifter, for å gi til mainPageController.
+    public List&lt;Recipe&gt; get4VerifiedRecipies() {
+<span class="nc" id="L81">        List&lt;Recipe&gt; recipes = new ArrayList&lt;Recipe&gt;();</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        for (int i = this.verifiedIndexCounter; i &lt; this.verifiedIndexCounter+4; i++){</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">            if (i &lt; this.verifiedRecipes.size()) {</span>
+<span class="nc" id="L84">                recipes.add(this.verifiedRecipes.get(i));</span>
+            }
+        }
+<span class="nc" id="L87">        this.verifiedIndexCounter += 4;</span>
+<span class="nc" id="L88">        System.out.println(this.verifiedRecipes.size());</span>
+<span class="nc" id="L89">        System.out.println(this.verifiedIndexCounter);</span>
+
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (this.verifiedIndexCounter &gt;= this.verifiedRecipes.size()){</span>
+<span class="nc" id="L92">            this.mainPageController.showChefPreviousPageButton();</span>
+<span class="nc" id="L93">            this.mainPageController.hideChefNextPageButton();</span>
+        }
+<span class="nc" id="L95">        return recipes;</span>
+    }
+
+    public void addRecipe(Recipe recipe){
+<span class="nc" id="L99">        this.recipes.add(recipe);</span>
+<span class="nc" id="L100">    }</span>
+
+    public void removeRecipe(Recipe recipe){
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        if(this.recipes.contains(recipe)) {</span>
+<span class="nc" id="L104">            this.recipes.remove(recipe);</span>
+        }
+<span class="nc" id="L106">    }</span>
+
+    public void previousContent(){
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (this.indexCounter &lt; 4){</span>
+<span class="nc" id="L110">            return ;</span>
+        }
+<span class="nc" id="L112">        this.indexCounter -= 8;</span>
+<span class="nc" id="L113">    }</span>
+
+    public void previousVerifiedContent(){
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        if (this.verifiedIndexCounter &lt; 4){</span>
+<span class="nc" id="L117">            return ;</span>
+        }
+<span class="nc" id="L119">        this.verifiedIndexCounter -= 8;</span>
+<span class="nc" id="L120">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

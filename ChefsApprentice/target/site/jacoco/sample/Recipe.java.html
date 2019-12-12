@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="nb"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Recipe.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ChefsApprentice</a> &gt; <a href="index.source.html" class="el_package">sample</a> &gt; <span class="el_source">Recipe.java</span></div><h1>Recipe.java</h1><pre class="source lang-java linenums">package sample;
+
+import java.util.HashMap;
+
+public class Recipe implements java.io.Serializable{
+    private final String title;
+    private final String instructions;
+    private HashMap&lt;String, String&gt; ingredients;
+    private final boolean verified;
+
+<span class="fc" id="L11">    public Recipe(String title, String instructions, HashMap&lt;String, String&gt; ingredients) {</span>
+<span class="fc" id="L12">        this.title = title;</span>
+<span class="fc" id="L13">        this.instructions = instructions;</span>
+<span class="fc" id="L14">        this.ingredients = ingredients;</span>
+<span class="fc" id="L15">        this.verified = false;</span>
+<span class="fc" id="L16">    }</span>
+
+<span class="nc" id="L18">    public Recipe(String title, String instructions, HashMap&lt;String, String&gt; ingredients, boolean verified) {</span>
+<span class="nc" id="L19">        this.title = title;</span>
+<span class="nc" id="L20">        this.instructions = instructions;</span>
+<span class="nc" id="L21">        this.ingredients = ingredients;</span>
+<span class="nc" id="L22">        this.verified = verified;</span>
+<span class="nc" id="L23">    }</span>
+
+    public String getTitle() {
+<span class="fc" id="L26">        return this.title;</span>
+    }
+
+    public String getInstructions() {
+<span class="fc" id="L30">        return this.instructions;</span>
+    }
+
+    public HashMap&lt;String, String&gt; getIngredients(){
+<span class="nc" id="L34">        return this.ingredients;</span>
+    }
+
+    public boolean isVerified() {
+<span class="nc" id="L38">        return verified;</span>
+    }
+
+    public void printContent() {
+<span class="nc" id="L42">        System.out.println(&quot;Title: &quot; + this.getTitle());</span>
+<span class="nc" id="L43">        System.out.println(&quot;Instructions: &quot; + this.getInstructions());</span>
+<span class="nc" id="L44">        System.out.println(&quot;Ingredients:&quot;);</span>
+<span class="nc" id="L45">        this.ingredients.forEach((ingredient, amount) -&gt; System.out.println(ingredient + &quot; - &quot; + amount));</span>
+<span class="nc" id="L46">    }</span>
+
+    public static void main(String[] args) {
+<span class="nc" id="L49">        HashMap&lt;String, String&gt; ingredients = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L50">        ingredients.putIfAbsent(&quot;Egg&quot;,&quot;3&quot;);</span>
+<span class="nc" id="L51">        ingredients.putIfAbsent(&quot;Salt&quot;,&quot;a tablespoon&quot;);</span>
+<span class="nc" id="L52">        ingredients.putIfAbsent(&quot;Pepper&quot;,&quot;a tablespoon&quot;);</span>
+<span class="nc" id="L53">        ingredients.putIfAbsent(&quot;Water&quot;,&quot;100ml&quot;);</span>
+<span class="nc" id="L54">        ingredients.putIfAbsent(&quot;Sausage&quot;,&quot;1&quot;);</span>
+<span class="nc" id="L55">        Recipe omelette = new Recipe(&quot;Omelette&quot;, &quot;Crack eggs into bowl. Whisk everything. &quot; +</span>
+                &quot;Add seasoning to taste. Cook for a couple of minutes.&quot;, ingredients);
+<span class="nc" id="L57">        System.out.println(&quot;Title: &quot; + omelette.getTitle());</span>
+<span class="nc" id="L58">        System.out.println(&quot;Instructions: &quot; + omelette.getInstructions());</span>
+<span class="nc" id="L59">        omelette.printContent();</span>
+<span class="nc" id="L60">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.MainPageController">
+
+    <top>
+        <AnchorPane prefHeight="62.0" prefWidth="600.0" style="-fx-background-color: #a69b97#a69b97 #a69b97#a69b97;" BorderPane.alignment="CENTER">
+            <children>
+                <Text fx:id="userStatus" layoutX="337.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="125.75518798828125">
+                    <font>
+                        <Font name="Berlin Sans FB Bold" size="14.0" />
+                    </font></Text>
+            <JFXButton fx:id="login" layoutX="553.0" layoutY="16.0" onAction="#handleloginbutton" stylesheets="@styling.css" text="Log in" />
+            <JFXButton fx:id="signup" layoutX="634.0" layoutY="16.0" onAction="#handlesignupbutton" stylesheets="@styling.css" text="Sign up" />
+            </children>
+        </AnchorPane>
+    </top>
+    <center>
+        <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <content>
+                <TabPane prefHeight="438.0" prefWidth="782.0" style="-fx-background-color: #a69b97#a69b97 #a69b97#a69b97;" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                        <Tab text="Frontpage">
+                            <content>
+                                <AnchorPane prefHeight="398.0" prefWidth="782.0" style="-fx-background-color: #d7ccc8#d7ccc8;">
+                                    <children>
+                                        <Button fx:id="button1" layoutX="169.0" layoutY="100.0" mnemonicParsing="false" onAction="#handleButton1" prefHeight="122.0" prefWidth="215.0" style="-fx-background-color: #a69b97#a69b97;" text="Oppskrift" />
+                                        <Button fx:id="button2" layoutX="399.0" layoutY="100.0" mnemonicParsing="false" onAction="#handleButton2" prefHeight="122.0" prefWidth="215.0" style="-fx-background-color: #a69b97#a69b97;" text="Oppskrift" />
+                                        <Button fx:id="button3" layoutX="169.0" layoutY="238.0" mnemonicParsing="false" onAction="#handleButton3" prefHeight="122.0" prefWidth="215.0" style="-fx-background-color: #a69b97#a69b97;" text="Oppskrift" />
+                                        <Button fx:id="button4" layoutX="399.0" layoutY="238.0" mnemonicParsing="false" onAction="#handleButton4" prefHeight="122.0" prefWidth="215.0" style="-fx-background-color: #a69b97#a69b97;" text="Oppskrift" />
+                              <JFXButton fx:id="previousPage" buttonType="RAISED" layoutX="80.0" layoutY="209.0" onAction="#handlePreviousPage" ripplerFill="#c90404" stylesheets="@styling.css" text="&lt;--" />
+                              <JFXTextField fx:id="textFieldSearch" layoutX="169.0" layoutY="30.0" prefHeight="27.0" prefWidth="332.0" promptText="Separate ingredients by comma, e.g &quot;Milk, egg, salt&quot;" />
+                              <JFXButton fx:id="buttonSearch" layoutX="534.0" layoutY="22.0" onAction="#handleSearch" prefHeight="37.0" prefWidth="81.0" stylesheets="@styling.css" text="Search" />
+                              <JFXButton fx:id="reloadbutton" layoutX="105.0" layoutY="31.0" onAction="#handleReload" stylesheets="@styling.css" text="Reload" />
+                              <JFXButton fx:id="nextPage" layoutX="650.0" layoutY="209.0" onAction="#handleNextPage" stylesheets="@styling.css" text="--&gt;" />
+                              <Text fx:id="textForSearchStatus" layoutX="166.0" layoutY="26.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="337.336669921875" />
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                        </Tab>
+                        <Tab text="Chef's recommendations">
+                            <content>
+                                <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #d7ccc8#d7ccc8;">
+                                    <children>
+                                        <Button fx:id="chefButton1" layoutX="169.0" layoutY="100.0" mnemonicParsing="false" onAction="#handleChefButton1" prefHeight="122.0" prefWidth="215.0" style="-fx-background-color: #a69b97#a69b97 #a69b97#a69b97;" text="Oppskrift" />
+                                        <Button fx:id="chefButton2" layoutX="399.0" layoutY="100.0" mnemonicParsing="false" onAction="#handleChefButton2" prefHeight="122.0" prefWidth="215.0" style="-fx-background-color: #a69b97#a69b97 #a69b97#a69b97;" text="Oppskrift" />
+                                        <Button fx:id="chefButton3" layoutX="169.0" layoutY="238.0" mnemonicParsing="false" onAction="#handleChefButton3" prefHeight="122.0" prefWidth="215.0" style="-fx-background-color: #a69b97#a69b97 #a69b97#a69b97;" text="Oppskrift" />
+                                        <Button fx:id="chefButton4" layoutX="399.0" layoutY="238.0" mnemonicParsing="false" onAction="#handleChefButton4" prefHeight="122.0" prefWidth="215.0" style="-fx-background-color: #a69b97#a69b97 #a69b97#a69b97;" text="Oppskrift" />
+                                      <JFXTextField fx:id="chefTextFieldSearch" layoutX="169.0" layoutY="30.0" prefHeight="27.0" prefWidth="332.0" promptText="Separate ingredients by comma, e.g &quot;Milk, egg, salt&quot;" />
+                                      <JFXButton fx:id="chefButtonSearch" layoutX="534.0" layoutY="22.0" onAction="#handleChefSearch" prefHeight="37.0" prefWidth="81.0" stylesheets="@styling.css" text="Search" />
+                                      <JFXButton fx:id="chefReloadbutton" layoutX="105.0" layoutY="31.0" onAction="#handleChefReload" stylesheets="@styling.css" text="Reload" />
+                                      <JFXButton fx:id="chefNextPage" layoutX="650.0" layoutY="209.0" onAction="#handleChefNextPage" stylesheets="@styling.css" text="--&gt;" />
+                                      <JFXButton fx:id="chefPreviousPage" layoutX="80.0" layoutY="209.0" onAction="#handleChefPreviousPage" stylesheets="@styling.css" text="&lt;--" />
+                              <Text fx:id="textForSearchStatusVerified" layoutX="169.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="331.7366943359375" />
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                        </Tab>
+                        <Tab fx:id="addRecipeTab" text="Add recipes">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                    <children>
+
+                                        <Text layoutX="161.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Write a new recipe">
+                                            <font>
+                                                <Font size="29.0" />
+                                            </font>
+                                        </Text>
+                                        <Text fx:id="addRecipesFromAPI" layoutX="162.0" layoutY="203.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Add more recipes">
+                                            <font>
+                                                <Font size="29.0" />
+                                            </font>
+                                        </Text>
+                                        <Text layoutX="160.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Contribute to the site by adding your own recipe" />
+                              <JFXButton fx:id="writeRecipe" layoutX="161.0" layoutY="114.0" onAction="#handleWriteRecipeButton" stylesheets="@styling.css" text="Write recipe" />
+                              <JFXTextField fx:id="adminRecipeCount" layoutX="162.0" layoutY="241.0" prefHeight="26.0" prefWidth="172.0" />
+                              <JFXButton fx:id="adminAddRecipes" layoutX="159.0" layoutY="287.0" onAction="#handleAdminAddRecipeButton" stylesheets="@styling.css" text="Add" />
+                              <Text fx:id="writeNumberBetween1and100" layoutX="159.0" layoutY="231.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Write a number between 1-100" />
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                        </Tab>
+                    </tabs>
+                </TabPane>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>

@@ -1,0 +1,703 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="nb"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DBConnector.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ChefsApprentice</a> &gt; <a href="index.source.html" class="el_package">sample</a> &gt; <span class="el_source">DBConnector.java</span></div><h1>DBConnector.java</h1><pre class="source lang-java linenums">package sample;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+<span class="nc" id="L10">public class DBConnector {</span>
+    private static final String dbUrl = &quot;jdbc:mysql://mysql.stud.ntnu.no/kaareob_recipes&quot;;
+    private static final String USERNAME = &quot;kaareob_79&quot;;
+    private static final String password = &quot;gruppe79&quot;;
+    private static final String driver = &quot;com.mysql.cj.jdbc.Driver&quot;;
+
+
+    public static void printRecipes(){
+        try{
+<span class="nc" id="L19">            Class.forName(driver);</span>
+<span class="nc" id="L20">            Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+<span class="nc" id="L21">            Statement statement = connection.createStatement();</span>
+<span class="nc" id="L22">            ResultSet resultSet = statement.executeQuery(&quot;SELECT * FROM Recipes&quot;);</span>
+<span class="nc bnc" id="L23" title="All 2 branches missed.">            while(resultSet.next()){</span>
+<span class="nc" id="L24">                System.out.println(&quot;RecipeNr: &quot; + resultSet.getInt(1) + &quot;\nTitle: &quot; +</span>
+<span class="nc" id="L25">                        resultSet.getString(2) + &quot;\nInstructions: &quot; + resultSet.getString(3));</span>
+<span class="nc" id="L26">                System.out.println(&quot;\n ----------------------------------------\n&quot;);</span>
+            }
+<span class="nc" id="L28">            connection.close();</span>
+<span class="nc" id="L29">        } catch (Exception e){</span>
+<span class="nc" id="L30">            System.out.println(e);</span>
+<span class="nc" id="L31">        }</span>
+<span class="nc" id="L32">    }</span>
+
+    public static ArrayList&lt;Recipe&gt; getRecipes(){
+<span class="fc" id="L35">        ArrayList&lt;Recipe&gt; recipes = new ArrayList&lt;&gt;();</span>
+        try{
+<span class="fc" id="L37">            Class.forName(driver);</span>
+<span class="fc" id="L38">            Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+<span class="fc" id="L39">            Statement statement = connection.createStatement();</span>
+<span class="fc" id="L40">            String query = &quot;SELECT RecipeID, Title, Instructions, IngredientName, Quantity &quot; +</span>
+                    &quot;FROM (Recipes Natural Join IngredientsInRecipes) Natural Join Ingredients &quot;;
+<span class="fc" id="L42">            ResultSet resultSet = statement.executeQuery(query);</span>
+<span class="fc" id="L43">            System.out.println(&quot;Getting all recipes...&quot;);</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">            if(resultSet.first()){</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">                while(!resultSet.isAfterLast()){</span>
+<span class="fc" id="L46">                    HashMap&lt;String, String&gt; ingredients = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L47">                    int recipeID = resultSet.getInt(1);</span>
+<span class="fc" id="L48">                    String title = resultSet.getString(2);</span>
+<span class="fc" id="L49">                    String instructions = resultSet.getString(3);</span>
+<span class="fc bfc" id="L50" title="All 4 branches covered.">                    while (!resultSet.isAfterLast() &amp;&amp; (resultSet.getInt(1) == recipeID)){</span>
+<span class="fc" id="L51">                        String ingredient = resultSet.getString(4);</span>
+<span class="fc" id="L52">                        String quantity = resultSet.getString(5);</span>
+<span class="fc" id="L53">                        ingredients.put(ingredient, quantity);</span>
+<span class="fc" id="L54">                        resultSet.next();</span>
+<span class="fc" id="L55">                    }</span>
+<span class="fc" id="L56">                    recipes.add(new Recipe(title, instructions, ingredients));</span>
+<span class="fc" id="L57">                }</span>
+            } else {
+<span class="nc" id="L59">                System.out.println(&quot;The search returned no results...&quot;);</span>
+            }
+<span class="fc" id="L61">            connection.close();</span>
+<span class="nc" id="L62">        } catch (Exception e){</span>
+<span class="nc" id="L63">            System.out.println(e);</span>
+<span class="fc" id="L64">        }</span>
+<span class="fc" id="L65">        return recipes;</span>
+    }
+
+    public static ArrayList&lt;Recipe&gt; getVerifiedRecipes(){
+<span class="nc" id="L69">        ArrayList&lt;Recipe&gt; recipes = new ArrayList&lt;&gt;();</span>
+        try{
+<span class="nc" id="L71">            Class.forName(driver);</span>
+<span class="nc" id="L72">            Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+<span class="nc" id="L73">            Statement statement = connection.createStatement();</span>
+<span class="nc" id="L74">            String query = &quot;SELECT RecipeID, Title, Instructions, Verified, IngredientName, Quantity &quot; +</span>
+                    &quot;FROM (Recipes Natural Join IngredientsInRecipes) Natural Join Ingredients &quot; +
+                    &quot;WHERE Verified = '1'&quot;;
+<span class="nc" id="L77">            ResultSet resultSet = statement.executeQuery(query);</span>
+<span class="nc" id="L78">            System.out.println(&quot;Getting all verified recipes...&quot;);</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">            if(resultSet.first()){</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">                while(!resultSet.isAfterLast()){</span>
+<span class="nc" id="L81">                    HashMap&lt;String, String&gt; ingredients = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L82">                    int recipeID = resultSet.getInt(1);</span>
+<span class="nc" id="L83">                    String title = resultSet.getString(2);</span>
+<span class="nc" id="L84">                    String instructions = resultSet.getString(3);</span>
+<span class="nc bnc" id="L85" title="All 4 branches missed.">                    while (!resultSet.isAfterLast() &amp;&amp; (resultSet.getInt(1) == recipeID)){</span>
+<span class="nc" id="L86">                        String ingredient = resultSet.getString(5);</span>
+<span class="nc" id="L87">                        String quantity = resultSet.getString(6);</span>
+<span class="nc" id="L88">                        ingredients.put(ingredient, quantity);</span>
+<span class="nc" id="L89">                        resultSet.next();</span>
+<span class="nc" id="L90">                    }</span>
+<span class="nc" id="L91">                    recipes.add(new Recipe(title, instructions, ingredients, true));</span>
+<span class="nc" id="L92">                }</span>
+            } else {
+<span class="nc" id="L94">                System.out.println(&quot;The search returned no results...&quot;);</span>
+            }
+<span class="nc" id="L96">            connection.close();</span>
+<span class="nc" id="L97">        } catch (Exception e){</span>
+<span class="nc" id="L98">            System.out.println(e);</span>
+<span class="nc" id="L99">        }</span>
+<span class="nc" id="L100">        return recipes;</span>
+    }
+
+    public static void printRecipesByIngredient(String ingredient){
+        try{
+<span class="nc" id="L105">            Class.forName(driver);</span>
+<span class="nc" id="L106">            Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+<span class="nc" id="L107">            Statement statement = connection.createStatement();</span>
+<span class="nc" id="L108">            String query = &quot;SELECT Title, Instructions, IngredientName &quot; +</span>
+                    &quot;FROM (Recipes Natural Join IngredientsInRecipes) Natural Join Ingredients &quot; +
+                    &quot;WHERE Ingredients.IngredientName = &quot; + &quot;'&quot; + ingredient + &quot;'&quot;;
+<span class="nc" id="L111">            ResultSet resultSet = statement.executeQuery(query);</span>
+<span class="nc" id="L112">            System.out.println(&quot;Your search was on ingredient: &quot; + ingredient);</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            while(resultSet.next()){</span>
+<span class="nc" id="L114">                System.out.println(&quot;Recipe: &quot; + resultSet.getString(1) + &quot;\nInstructions: &quot; +</span>
+<span class="nc" id="L115">                        resultSet.getString(2) + &quot;\nIngredient Search Match: &quot; + resultSet.getString(3));</span>
+<span class="nc" id="L116">                System.out.println(&quot;\n ----------------------------------------\n&quot;);</span>
+            }
+<span class="nc" id="L118">            connection.close();</span>
+<span class="nc" id="L119">        } catch (Exception e){</span>
+<span class="nc" id="L120">            System.out.println(e);</span>
+<span class="nc" id="L121">        }</span>
+<span class="nc" id="L122">    }</span>
+
+    public static ArrayList&lt;Recipe&gt; getRecipesByIngredient(String ingredient){
+<span class="nc" id="L125">        ArrayList&lt;Integer&gt; ids = new ArrayList&lt;&gt;();</span>
+        try{
+<span class="nc" id="L127">            Class.forName(driver);</span>
+<span class="nc" id="L128">            Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+<span class="nc" id="L129">            Statement statement = connection.createStatement();</span>
+<span class="nc" id="L130">            String query = &quot;SELECT RecipeID &quot; +</span>
+                    &quot;FROM (Recipes Natural Join IngredientsInRecipes) Natural Join Ingredients &quot; +
+                    &quot;WHERE Ingredients.IngredientName = &quot; + &quot;'&quot; + ingredient + &quot;'&quot;;
+<span class="nc" id="L133">            ResultSet resultSet = statement.executeQuery(query);</span>
+<span class="nc" id="L134">            System.out.println(&quot;Your search was on ingredient: &quot; + ingredient);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">            while(resultSet.next()){</span>
+<span class="nc" id="L136">                ids.add(resultSet.getInt(1));</span>
+            }
+<span class="nc" id="L138">            connection.close();</span>
+<span class="nc" id="L139">        } catch (Exception e){</span>
+<span class="nc" id="L140">            System.out.println(e);</span>
+<span class="nc" id="L141">        }</span>
+<span class="nc" id="L142">        ArrayList&lt;Recipe&gt; recipes = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L143">        ids.forEach(id -&gt; recipes.add(getRecipeByID(id)));</span>
+<span class="nc" id="L144">        return recipes;</span>
+    }
+
+    public static ArrayList&lt;Recipe&gt; getRecipesByIngredient(ArrayList&lt;String&gt; ingredients){
+<span class="nc" id="L148">        ArrayList&lt;Integer&gt; ids = new ArrayList&lt;&gt;();</span>
+        try{
+<span class="nc" id="L150">            Class.forName(driver);</span>
+<span class="nc" id="L151">            Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+<span class="nc" id="L152">            String query = &quot;SELECT RecipeID &quot; +</span>
+                    &quot;FROM (Recipes Natural Join IngredientsInRecipes) Natural Join Ingredients &quot; +
+                    &quot;WHERE Ingredients.IngredientName = ?&quot;;
+<span class="nc" id="L155">            PreparedStatement preparedStatement = connection.prepareStatement(query);</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">            for (String ingredient : ingredients) {</span>
+<span class="nc" id="L157">                preparedStatement.setString(1, ingredient);</span>
+<span class="nc" id="L158">                ResultSet resultSet = preparedStatement.executeQuery();</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">                while(resultSet.next()){</span>
+<span class="nc" id="L160">                    ids.add(resultSet.getInt(1));</span>
+                }
+<span class="nc" id="L162">            }</span>
+<span class="nc" id="L163">            connection.close();</span>
+<span class="nc" id="L164">        } catch (Exception e){</span>
+<span class="nc" id="L165">            System.out.println(e);</span>
+<span class="nc" id="L166">        }</span>
+<span class="nc" id="L167">        ArrayList&lt;Recipe&gt; recipes = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L168">        Map&lt;Integer, Long&gt; counts = ids.stream().collect(Collectors.groupingBy(e -&gt; e, Collectors.counting()));</span>
+<span class="nc" id="L169">        counts.forEach((id, count ) -&gt; {</span>
+<span class="nc" id="L170">            System.out.println(&quot;ID: &quot; + id + &quot; - Occurences: &quot; + count);</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">            if (count == ingredients.size()) {</span>
+<span class="nc" id="L172">                recipes.add(getRecipeByID(id));</span>
+            }
+<span class="nc" id="L174">        });</span>
+<span class="nc" id="L175">        System.out.println(&quot;Your search was on ingredients: &quot;);</span>
+<span class="nc" id="L176">        ingredients.forEach(ingredient -&gt; System.out.println(ingredient));</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">        if (recipes.size() &gt; 0){</span>
+<span class="nc" id="L178">            System.out.println(&quot;Search successful!&quot;);</span>
+        } else {
+<span class="nc" id="L180">            System.out.println(&quot;No search results found containing all ingredients!&quot;);</span>
+        }
+
+<span class="nc" id="L183">        return recipes;</span>
+    }
+
+    public static ArrayList&lt;Recipe&gt; getVerifiedRecipesByIngredient(ArrayList&lt;String&gt; ingredients){
+<span class="nc" id="L187">        ArrayList&lt;Integer&gt; ids = new ArrayList&lt;&gt;();</span>
+        try{
+<span class="nc" id="L189">            Class.forName(driver);</span>
+<span class="nc" id="L190">            Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+<span class="nc" id="L191">            String query = &quot;SELECT RecipeID &quot; +</span>
+                    &quot;FROM (Recipes Natural Join IngredientsInRecipes) Natural Join Ingredients &quot; +
+                    &quot;WHERE Ingredients.IngredientName = ?&quot; +
+                    &quot;AND Recipes.Verified = 0&quot;;
+<span class="nc" id="L195">            PreparedStatement preparedStatement = connection.prepareStatement(query);</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">            for (String ingredient : ingredients) {</span>
+<span class="nc" id="L197">                preparedStatement.setString(1, ingredient);</span>
+<span class="nc" id="L198">                ResultSet resultSet = preparedStatement.executeQuery();</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">                while(resultSet.next()){</span>
+<span class="nc" id="L200">                    ids.add(resultSet.getInt(1));</span>
+                }
+<span class="nc" id="L202">            }</span>
+<span class="nc" id="L203">            connection.close();</span>
+<span class="nc" id="L204">        } catch (Exception e){</span>
+<span class="nc" id="L205">            System.out.println(e);</span>
+<span class="nc" id="L206">        }</span>
+<span class="nc" id="L207">        ArrayList&lt;Recipe&gt; recipes = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L208">        Map&lt;Integer, Long&gt; counts = ids.stream().collect(Collectors.groupingBy(e -&gt; e, Collectors.counting()));</span>
+<span class="nc" id="L209">        counts.forEach((id, count ) -&gt; {</span>
+<span class="nc" id="L210">            System.out.println(&quot;ID: &quot; + id + &quot; - Occurences: &quot; + count);</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">            if (count == ingredients.size()) {</span>
+<span class="nc" id="L212">                recipes.add(getRecipeByID(id));</span>
+            }
+<span class="nc" id="L214">        });</span>
+<span class="nc" id="L215">        System.out.println(&quot;Your search was on ingredients: &quot;);</span>
+<span class="nc" id="L216">        ingredients.forEach(ingredient -&gt; System.out.println(ingredient));</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">        if (recipes.size() &gt; 0){</span>
+<span class="nc" id="L218">            System.out.println(&quot;Search successful!&quot;);</span>
+        } else {
+<span class="nc" id="L220">            System.out.println(&quot;No search results found containing all ingredients!&quot;);</span>
+        }
+
+<span class="nc" id="L223">        return recipes;</span>
+    }
+
+    public static void printRecipesByName(String recipeName){
+        try{
+<span class="nc" id="L228">            Class.forName(driver);</span>
+<span class="nc" id="L229">            Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+<span class="nc" id="L230">            Statement statement = connection.createStatement();</span>
+<span class="nc" id="L231">            String query = &quot;SELECT RecipeID, Title, Instructions, IngredientName, Quantity &quot; +</span>
+                    &quot;FROM (Recipes Natural Join IngredientsInRecipes) Natural Join Ingredients &quot; +
+                    &quot;WHERE Recipes.Title = &quot; + &quot;'&quot; + recipeName + &quot;'&quot;;
+<span class="nc" id="L234">            ResultSet resultSet = statement.executeQuery(query);</span>
+<span class="nc" id="L235">            System.out.println(&quot;Your search was on the keyword: &quot; + recipeName);</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">            if(resultSet.first()){</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">                while(!resultSet.isAfterLast()){</span>
+<span class="nc" id="L238">                    int recipeID = resultSet.getInt(1);</span>
+<span class="nc" id="L239">                    String title = resultSet.getString(2);</span>
+<span class="nc" id="L240">                    String instructions = resultSet.getString(3);</span>
+<span class="nc" id="L241">                    ArrayList&lt;String&gt; ingredients = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L242">                    ArrayList&lt;String&gt; quantities = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L243">                    System.out.println(&quot;RecipeID: &quot; + recipeID);</span>
+<span class="nc" id="L244">                    System.out.println(&quot;Title: &quot; + title + &quot;\nInstructions: &quot; + instructions);</span>
+<span class="nc" id="L245">                    System.out.println(&quot;Ingredients and quantities:&quot;);</span>
+<span class="nc bnc" id="L246" title="All 4 branches missed.">                    while (!resultSet.isAfterLast() &amp;&amp; (resultSet.getInt(1) == recipeID)){</span>
+<span class="nc" id="L247">                        String ingredient = resultSet.getString(4);</span>
+<span class="nc" id="L248">                        ingredients.add(ingredient);</span>
+<span class="nc" id="L249">                        String quantity = resultSet.getString(5);</span>
+<span class="nc" id="L250">                        quantities.add(quantity);</span>
+<span class="nc" id="L251">                        System.out.println(ingredient + &quot; - &quot; + quantity);</span>
+<span class="nc" id="L252">                        resultSet.next();</span>
+<span class="nc" id="L253">                    }</span>
+<span class="nc" id="L254">                }</span>
+            } else {
+<span class="nc" id="L256">                System.out.println(&quot;The search returned no results...&quot;);</span>
+            }
+<span class="nc" id="L258">            connection.close();</span>
+<span class="nc" id="L259">        } catch (Exception e){</span>
+<span class="nc" id="L260">            System.out.println(e);</span>
+<span class="nc" id="L261">        }</span>
+<span class="nc" id="L262">    }</span>
+
+    public static Recipe getRecipeByID(int recipeID){
+<span class="nc" id="L265">        Recipe recipe = new Recipe(&quot;Not Found&quot;, &quot;Not Found&quot;, new HashMap&lt;String, String&gt;());</span>
+        try{
+<span class="nc" id="L267">            Class.forName(driver);</span>
+<span class="nc" id="L268">            Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+<span class="nc" id="L269">            Statement statement = connection.createStatement();</span>
+<span class="nc" id="L270">            String query = &quot;SELECT RecipeID, Title, Instructions, IngredientName, Quantity, Verified &quot; +</span>
+                    &quot;FROM (Recipes Natural Join IngredientsInRecipes) Natural Join Ingredients &quot; +
+                    &quot;WHERE Recipes.RecipeID = &quot; + recipeID;
+<span class="nc" id="L273">            ResultSet resultSet = statement.executeQuery(query);</span>
+<span class="nc" id="L274">            System.out.println(&quot;Your search was on the recipeID: &quot; + recipeID);</span>
+<span class="nc" id="L275">            HashMap&lt;String, String&gt; ingredients = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L276">            resultSet.first();</span>
+<span class="nc" id="L277">            int recipeIDresult = resultSet.getInt(1);</span>
+<span class="nc" id="L278">            String title = resultSet.getString(2);</span>
+<span class="nc" id="L279">            String instructions = resultSet.getString(3);</span>
+<span class="nc" id="L280">            int verifiedInt = resultSet.getInt(6);</span>
+<span class="nc" id="L281">            boolean verified = false;</span>
+<span class="nc bnc" id="L282" title="All 2 branches missed.">            if(verifiedInt == 1) {</span>
+<span class="nc" id="L283">                verified = true;</span>
+            }
+<span class="nc bnc" id="L285" title="All 4 branches missed.">            while (!resultSet.isAfterLast() &amp;&amp; (resultSet.getInt(1) == recipeIDresult)){</span>
+<span class="nc" id="L286">                String ingredient = resultSet.getString(4);</span>
+<span class="nc" id="L287">                String quantity = resultSet.getString(5);</span>
+<span class="nc" id="L288">                ingredients.put(ingredient, quantity);</span>
+<span class="nc" id="L289">                resultSet.next();</span>
+<span class="nc" id="L290">            }</span>
+<span class="nc" id="L291">            recipe = new Recipe(title, instructions, ingredients, verified);</span>
+<span class="nc" id="L292">            connection.close();</span>
+<span class="nc" id="L293">        } catch (Exception e){</span>
+<span class="nc" id="L294">            System.out.println(e);</span>
+<span class="nc" id="L295">        }</span>
+<span class="nc" id="L296">        return recipe;</span>
+    }
+
+    public static ArrayList&lt;Recipe&gt; getRecipesByName(String recipeName){
+<span class="nc" id="L300">        ArrayList&lt;Recipe&gt; recipes = new ArrayList&lt;&gt;();</span>
+        try{
+<span class="nc" id="L302">            Class.forName(driver);</span>
+<span class="nc" id="L303">            Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+<span class="nc" id="L304">            Statement statement = connection.createStatement();</span>
+<span class="nc" id="L305">            String query = &quot;SELECT RecipeID, Title, Instructions, IngredientName, Quantity &quot; +</span>
+                    &quot;FROM (Recipes Natural Join IngredientsInRecipes) Natural Join Ingredients &quot; +
+                    &quot;WHERE Recipes.Title = &quot; + &quot;'&quot; + recipeName + &quot;'&quot;;
+<span class="nc" id="L308">            ResultSet resultSet = statement.executeQuery(query);</span>
+<span class="nc" id="L309">            System.out.println(&quot;Your search was on the keyword: &quot; + recipeName);</span>
+<span class="nc bnc" id="L310" title="All 2 branches missed.">            if(resultSet.first()){</span>
+<span class="nc bnc" id="L311" title="All 2 branches missed.">                while(!resultSet.isAfterLast()){</span>
+<span class="nc" id="L312">                    HashMap&lt;String, String&gt; ingredients = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L313">                    int recipeID = resultSet.getInt(1);</span>
+<span class="nc" id="L314">                    String title = resultSet.getString(2);</span>
+<span class="nc" id="L315">                    String instructions = resultSet.getString(3);</span>
+<span class="nc bnc" id="L316" title="All 4 branches missed.">                    while (!resultSet.isAfterLast() &amp;&amp; (resultSet.getInt(1) == recipeID)){</span>
+<span class="nc" id="L317">                        String ingredient = resultSet.getString(4);</span>
+<span class="nc" id="L318">                        String quantity = resultSet.getString(5);</span>
+<span class="nc" id="L319">                        ingredients.put(ingredient, quantity);</span>
+<span class="nc" id="L320">                        resultSet.next();</span>
+<span class="nc" id="L321">                    }</span>
+<span class="nc" id="L322">                    recipes.add(new Recipe(title, instructions, ingredients));</span>
+<span class="nc" id="L323">                }</span>
+            } else {
+<span class="nc" id="L325">                System.out.println(&quot;The search returned no results...&quot;);</span>
+            }
+<span class="nc" id="L327">            connection.close();</span>
+<span class="nc" id="L328">        } catch (Exception e){</span>
+<span class="nc" id="L329">            System.out.println(e);</span>
+<span class="nc" id="L330">        }</span>
+<span class="nc" id="L331">        return recipes;</span>
+    }
+
+    //Deprecated
+    public static void addRecipe(String title, String instructions){
+        try{
+<span class="nc" id="L337">            Class.forName(driver);</span>
+<span class="nc" id="L338">            Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+
+            // the mysql insert statement
+<span class="nc" id="L341">            String query = &quot; INSERT INTO recipes (title, instructions, Verified)&quot;</span>
+                    + &quot; VALUES (?, ?, ?)&quot;;
+
+            // create the mysql insert preparedstatement
+<span class="nc" id="L345">            PreparedStatement statement = connection.prepareStatement(query);</span>
+<span class="nc" id="L346">            statement.setString(1, title);</span>
+<span class="nc" id="L347">            statement.setString(2, instructions);</span>
+<span class="nc" id="L348">            statement.setInt(3, 0);</span>
+
+            // execute the preparedstatement
+<span class="nc" id="L351">            System.out.println(&quot;Inserting following items into recipes:\n&quot; + &quot;title: &quot;</span>
+                    + title + &quot;\nInstructions: &quot; + instructions);
+<span class="nc" id="L353">            statement.execute();</span>
+
+<span class="nc" id="L355">            connection.close();</span>
+<span class="nc" id="L356">        } catch (Exception e){</span>
+<span class="nc" id="L357">            System.out.println(e);</span>
+<span class="nc" id="L358">        }</span>
+<span class="nc" id="L359">    }</span>
+
+    public static void addRecipe(Recipe recipe){
+        try{
+<span class="nc" id="L363">            Class.forName(driver);</span>
+<span class="nc" id="L364">            Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+
+            // the mysql insert statements
+            // First one is for Recipes
+<span class="nc" id="L368">            String recipesQuery = &quot; INSERT INTO Recipes (title, instructions, Verified)&quot;</span>
+                                + &quot; VALUES (?, ?, ?)&quot;;
+            // Second one is for Ingredients
+<span class="nc" id="L371">            String ingredientsQuery = &quot;INSERT INTO Ingredients VALUES (?)&quot;;</span>
+            // Third one is for mapping between Recipes and Ingredients.
+<span class="nc" id="L373">            String ingredientsInRecipesQuery = &quot;INSERT INTO IngredientsInRecipes VALUES(?, ?, ?)&quot;;</span>
+
+            // create the mysql insert preparedstatement
+<span class="nc" id="L376">            PreparedStatement statement = connection.prepareStatement(recipesQuery);</span>
+<span class="nc" id="L377">            statement.setString(1, recipe.getTitle());</span>
+<span class="nc" id="L378">            statement.setString(2, recipe.getInstructions());</span>
+<span class="nc bnc" id="L379" title="All 2 branches missed.">            if(recipe.isVerified()){</span>
+<span class="nc" id="L380">                statement.setInt(3, 1);</span>
+            } else {
+<span class="nc" id="L382">                statement.setInt(3, 0);</span>
+            }
+
+            // execute the preparedstatement
+<span class="nc" id="L386">            System.out.println(&quot;Inserting following items into recipes:\n&quot; + &quot;title: &quot;</span>
+<span class="nc" id="L387">                    + recipe.getTitle() + &quot;\nInstructions: &quot; + recipe.getInstructions());</span>
+<span class="nc" id="L388">            statement.execute();</span>
+
+            // Getting recipeDbId
+<span class="nc" id="L391">            Statement idStatement = connection.createStatement();</span>
+<span class="nc" id="L392">            String idQuery = &quot;SELECT RecipeID &quot; +</span>
+                            &quot;FROM Recipes &quot; +
+<span class="nc" id="L394">                            &quot;WHERE Recipes.Title = &quot; + &quot;'&quot; + recipe.getTitle() + &quot;'&quot;;</span>
+<span class="nc" id="L395">            ResultSet resultSet = idStatement.executeQuery(idQuery);</span>
+<span class="nc" id="L396">            resultSet.next();</span>
+<span class="nc" id="L397">            int recipeDbId = resultSet.getInt(1);</span>
+<span class="nc" id="L398">            System.out.println(&quot;RecipeID: &quot; + recipeDbId);</span>
+
+
+            // creating statements regarding ingredient mapping
+<span class="nc" id="L402">            PreparedStatement ingrStatement = connection.prepareStatement(ingredientsQuery);</span>
+<span class="nc" id="L403">            PreparedStatement ingrToRecStatement = connection.prepareStatement(ingredientsInRecipesQuery);</span>
+
+            // Iterating through ingredient - quantity pairs and executing INSERT queries.
+<span class="nc" id="L406">            HashMap&lt;String, String&gt; ingredients = recipe.getIngredients();</span>
+<span class="nc" id="L407">            Iterator&lt;Map.Entry&lt;String, String&gt;&gt; iterator = ingredients.entrySet().iterator();</span>
+<span class="nc bnc" id="L408" title="All 2 branches missed.">            while(iterator.hasNext()) {</span>
+<span class="nc" id="L409">                Map.Entry&lt;String, String&gt; pair = iterator.next();</span>
+<span class="nc" id="L410">                System.out.println(pair.getKey() + &quot; = &quot; + pair.getValue());</span>
+                // Updating statements
+                try{
+                    //These need to be in their own try-block in case ingredient already exists in DB
+<span class="nc" id="L414">                    System.out.println(&quot;Trying to add ingredient: &quot; + pair.getKey());</span>
+<span class="nc" id="L415">                    ingrStatement.setString(1, pair.getKey());</span>
+<span class="nc" id="L416">                    ingrStatement.execute();</span>
+<span class="nc" id="L417">                } catch (SQLIntegrityConstraintViolationException e) {</span>
+<span class="nc" id="L418">                    System.out.println(e);</span>
+<span class="nc" id="L419">                }</span>
+<span class="nc" id="L420">                ingrToRecStatement.setInt(1, recipeDbId);</span>
+<span class="nc" id="L421">                ingrToRecStatement.setString(2, pair.getKey());</span>
+<span class="nc" id="L422">                ingrToRecStatement.setString(3, pair.getValue());</span>
+<span class="nc" id="L423">                System.out.println(&quot;Adding new ingredientconnection: &quot; + pair.getKey() + pair.getValue() + &quot;ID: &quot; + recipeDbId);</span>
+                // Executing statements
+<span class="nc" id="L425">                ingrToRecStatement.execute();</span>
+<span class="nc" id="L426">            }</span>
+<span class="nc" id="L427">            connection.close();</span>
+<span class="nc" id="L428">            System.out.println(&quot;Insert successful!\n__________________________________&quot;);</span>
+<span class="nc" id="L429">        } catch (Exception e){</span>
+<span class="nc" id="L430">            System.out.println(e);</span>
+<span class="nc" id="L431">        }</span>
+<span class="nc" id="L432">    }</span>
+
+    public static int getRecipeID(Recipe recipe) {
+<span class="nc" id="L435">        int recipeID = -1;</span>
+        try{
+<span class="nc" id="L437">            Class.forName(driver);</span>
+<span class="nc" id="L438">            Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+<span class="nc" id="L439">            String recipeQuery = &quot;SELECT RecipeID FROM Recipes WHERE Title = ?&quot;;</span>
+<span class="nc" id="L440">            PreparedStatement idStatement = connection.prepareStatement(recipeQuery);</span>
+<span class="nc" id="L441">            idStatement.setString(1, recipe.getTitle());</span>
+<span class="nc" id="L442">            ResultSet resultSet = idStatement.executeQuery();</span>
+<span class="nc" id="L443">            resultSet.next();</span>
+<span class="nc bnc" id="L444" title="All 2 branches missed.">            if(!resultSet.isAfterLast()) {</span>
+<span class="nc" id="L445">            recipeID = resultSet.getInt(1);</span>
+            }
+<span class="nc" id="L447">            connection.close();</span>
+<span class="nc" id="L448">        } catch (Exception e){</span>
+<span class="nc" id="L449">            System.out.println(e);</span>
+<span class="nc" id="L450">        }</span>
+<span class="nc" id="L451">        return recipeID;</span>
+    }
+
+    public static void deleteRecipe(Recipe recipe){
+<span class="nc" id="L455">        int recipeID = getRecipeID(recipe);</span>
+<span class="nc bnc" id="L456" title="All 2 branches missed.">        if(recipeID &gt; -1){</span>
+            try{
+<span class="nc" id="L458">                Class.forName(driver);</span>
+<span class="nc" id="L459">                Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+                //Deleting from IngredientsInRecipes
+<span class="nc" id="L461">                String ingrInRecQuery = &quot;DELETE FROM IngredientsInRecipes WHERE RecipeID = ?&quot;;</span>
+<span class="nc" id="L462">                PreparedStatement ingrInRecStmt = connection.prepareStatement(ingrInRecQuery);</span>
+<span class="nc" id="L463">                ingrInRecStmt.setInt(1, recipeID);</span>
+<span class="nc" id="L464">                ingrInRecStmt.executeUpdate();</span>
+
+                //Deleting from Recipes
+<span class="nc" id="L467">                String recipeQuery = &quot;DELETE FROM Recipes WHERE RecipeID = ?&quot;;</span>
+<span class="nc" id="L468">                PreparedStatement recipeStmt = connection.prepareStatement(recipeQuery);</span>
+<span class="nc" id="L469">                recipeStmt.setInt(1, recipeID);</span>
+<span class="nc" id="L470">                recipeStmt.executeUpdate();</span>
+
+
+<span class="nc" id="L473">                connection.close();</span>
+<span class="nc" id="L474">                System.out.println(&quot;Deletion successful!\n__________________________________&quot;);</span>
+<span class="nc" id="L475">            } catch (Exception e){</span>
+<span class="nc" id="L476">                System.out.println(e);</span>
+<span class="nc" id="L477">            }</span>
+        } else{
+<span class="nc" id="L479">            System.out.println(&quot;Recipe not in database.&quot;);</span>
+        }
+<span class="nc" id="L481">    }</span>
+
+    public static int getRecipeID(String title) {
+<span class="nc" id="L484">        int recipeID = -1;</span>
+        try{
+<span class="nc" id="L486">            Class.forName(driver);</span>
+<span class="nc" id="L487">            Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+<span class="nc" id="L488">            String recipeQuery = &quot;SELECT RecipeID FROM Recipes WHERE Title = ?&quot;;</span>
+<span class="nc" id="L489">            PreparedStatement idStatement = connection.prepareStatement(recipeQuery);</span>
+<span class="nc" id="L490">            idStatement.setString(1, title);</span>
+<span class="nc" id="L491">            ResultSet resultSet = idStatement.executeQuery();</span>
+<span class="nc" id="L492">            resultSet.next();</span>
+<span class="nc bnc" id="L493" title="All 2 branches missed.">            if(!resultSet.isAfterLast()) {</span>
+<span class="nc" id="L494">                recipeID = resultSet.getInt(1);</span>
+            }
+<span class="nc" id="L496">            connection.close();</span>
+<span class="nc" id="L497">        } catch (Exception e){</span>
+<span class="nc" id="L498">            System.out.println(e);</span>
+<span class="nc" id="L499">        }</span>
+<span class="nc" id="L500">        return recipeID;</span>
+    }
+
+    public static boolean deleteRecipe(String title){
+<span class="nc" id="L504">        int recipeID = getRecipeID(title);</span>
+<span class="nc bnc" id="L505" title="All 2 branches missed.">        if(recipeID &gt; -1){</span>
+            try{
+<span class="nc" id="L507">                Class.forName(driver);</span>
+<span class="nc" id="L508">                Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+                //Deleting from IngredientsInRecipes
+<span class="nc" id="L510">                String ingrInRecQuery = &quot;DELETE FROM IngredientsInRecipes WHERE RecipeID = ?&quot;;</span>
+<span class="nc" id="L511">                PreparedStatement ingrInRecStmt = connection.prepareStatement(ingrInRecQuery);</span>
+<span class="nc" id="L512">                ingrInRecStmt.setInt(1, recipeID);</span>
+<span class="nc" id="L513">                ingrInRecStmt.executeUpdate();</span>
+
+                //Deleting from Recipes
+<span class="nc" id="L516">                String recipeQuery = &quot;DELETE FROM Recipes WHERE RecipeID = ?&quot;;</span>
+<span class="nc" id="L517">                PreparedStatement recipeStmt = connection.prepareStatement(recipeQuery);</span>
+<span class="nc" id="L518">                recipeStmt.setInt(1, recipeID);</span>
+<span class="nc" id="L519">                recipeStmt.executeUpdate();</span>
+
+
+<span class="nc" id="L522">                connection.close();</span>
+<span class="nc" id="L523">                System.out.println(&quot;Deletion successful!\n__________________________________&quot;);</span>
+<span class="nc" id="L524">                return true;</span>
+<span class="nc" id="L525">            } catch (Exception e){</span>
+<span class="nc" id="L526">                System.out.println(e);</span>
+<span class="nc" id="L527">            }</span>
+        } else{
+<span class="nc" id="L529">            System.out.println(&quot;Recipe not in database.&quot;);</span>
+        }
+<span class="nc" id="L531">        return false;</span>
+    }
+
+    public static void addUser(String username, String role){
+<span class="nc bnc" id="L535" title="All 2 branches missed.">        if(doesUserExist(username)) {</span>
+<span class="nc" id="L536">            System.out.println(&quot;User: &quot; + username + &quot; already exists..&quot;);</span>
+        } else {
+            try{
+<span class="nc" id="L539">                Class.forName(driver);</span>
+<span class="nc" id="L540">                Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+
+                // the mysql insert statement
+<span class="nc" id="L543">                String query = &quot;INSERT INTO Users (UserName, Role)&quot;</span>
+                        + &quot; VALUES (?, ?)&quot;;
+
+                // create the mysql insert PreparedStatement
+<span class="nc" id="L547">                PreparedStatement statement = connection.prepareStatement(query);</span>
+<span class="nc" id="L548">                statement.setString(1, username);</span>
+<span class="nc" id="L549">                statement.setString(2, role);</span>
+
+                // execute the PreparedStatement
+<span class="nc" id="L552">                System.out.println(&quot;Inserting following items into users:\n&quot; + &quot;Username: &quot;</span>
+                        + username + &quot;\nRole: &quot; + role);
+<span class="nc" id="L554">                statement.execute();</span>
+
+<span class="nc" id="L556">                connection.close();</span>
+<span class="nc" id="L557">            } catch (Exception e){</span>
+<span class="nc" id="L558">                System.out.println(e);</span>
+<span class="nc" id="L559">            }</span>
+        }
+<span class="nc" id="L561">    }</span>
+
+    public static boolean addUser(User user){
+<span class="nc bnc" id="L564" title="All 2 branches missed.">        if(doesUserExist(user)) {</span>
+<span class="nc" id="L565">            System.out.println(&quot;User: &quot; + user.getUsername() + &quot; already exists..&quot;);</span>
+<span class="nc" id="L566">            return false;</span>
+        } else {
+            try{
+<span class="nc" id="L569">                Class.forName(driver);</span>
+<span class="nc" id="L570">                Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+
+                // the mysql insert statement
+<span class="nc" id="L573">                String query = &quot;INSERT INTO Users (UserName, Role)&quot;</span>
+                        + &quot; VALUES (?, ?)&quot;;
+
+                // create the mysql insert PreparedStatement
+<span class="nc" id="L577">                PreparedStatement statement = connection.prepareStatement(query);</span>
+<span class="nc" id="L578">                statement.setString(1, user.getUsername());</span>
+<span class="nc" id="L579">                statement.setString(2, user.getRole());</span>
+
+                // execute the PreparedStatement
+<span class="nc" id="L582">                System.out.println(&quot;Inserting following items into users:\n&quot; + &quot;Username: &quot;</span>
+<span class="nc" id="L583">                        + user.getUsername() + &quot;\nRole: &quot; + user.getRole());</span>
+<span class="nc" id="L584">                statement.execute();</span>
+
+<span class="nc" id="L586">                connection.close();</span>
+<span class="nc" id="L587">            } catch (Exception e){</span>
+<span class="nc" id="L588">                System.out.println(e);</span>
+<span class="nc" id="L589">            }</span>
+<span class="nc" id="L590">            return true;</span>
+        }
+    }
+
+    public static ArrayList&lt;User&gt; getUsers(){
+<span class="nc" id="L595">        ArrayList&lt;User&gt; users = new ArrayList&lt;&gt;();</span>
+        try{
+<span class="nc" id="L597">            Class.forName(driver);</span>
+<span class="nc" id="L598">            Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+<span class="nc" id="L599">            Statement statement = connection.createStatement();</span>
+<span class="nc" id="L600">            String query = &quot;SELECT * FROM Users&quot;;</span>
+<span class="nc" id="L601">            ResultSet resultSet = statement.executeQuery(query);</span>
+<span class="nc" id="L602">            System.out.println(&quot;Getting all users...&quot;);</span>
+<span class="nc bnc" id="L603" title="All 2 branches missed.">            if(resultSet.first()){</span>
+<span class="nc bnc" id="L604" title="All 2 branches missed.">                while(!resultSet.isAfterLast()){</span>
+<span class="nc" id="L605">                    String username = resultSet.getString(2);</span>
+<span class="nc" id="L606">                    String role = resultSet.getString(3);</span>
+<span class="nc" id="L607">                    users.add(new User(username, role));</span>
+<span class="nc" id="L608">                    resultSet.next();</span>
+<span class="nc" id="L609">                }</span>
+            } else {
+<span class="nc" id="L611">                System.out.println(&quot;The search returned no results...&quot;);</span>
+            }
+<span class="nc" id="L613">            connection.close();</span>
+<span class="nc" id="L614">        } catch (Exception e){</span>
+<span class="nc" id="L615">            System.out.println(e);</span>
+<span class="nc" id="L616">        }</span>
+<span class="nc" id="L617">        return users;</span>
+    }
+
+    public static User getUser(String username) {
+<span class="nc" id="L621">        User user = null;</span>
+        try {
+<span class="nc" id="L623">            Class.forName(driver);</span>
+<span class="nc" id="L624">            Connection connection = DriverManager.getConnection(dbUrl, USERNAME, password);</span>
+<span class="nc" id="L625">            String query = &quot;Select * FROM Users WHERE UserName = ?&quot;;</span>
+<span class="nc" id="L626">            PreparedStatement statement = connection.prepareStatement(query);</span>
+<span class="nc" id="L627">            statement.setString(1, username);</span>
+<span class="nc" id="L628">            ResultSet resultSet = statement.executeQuery();</span>
+
+<span class="nc bnc" id="L630" title="All 2 branches missed.">            if(resultSet.first()){</span>
+<span class="nc" id="L631">                String name = resultSet.getString(2);</span>
+<span class="nc" id="L632">                String role = resultSet.getString(3);</span>
+<span class="nc" id="L633">                user = new User(name, role);</span>
+<span class="nc" id="L634">            } else {</span>
+<span class="nc" id="L635">                System.out.println(&quot;The search returned no results...&quot;);</span>
+            }
+
+<span class="nc" id="L638">        } catch (Exception e) {</span>
+<span class="nc" id="L639">            e.printStackTrace();</span>
+<span class="nc" id="L640">        }</span>
+<span class="nc" id="L641">        return user;</span>
+    }
+
+    public static String getRoleByUserName(String name) {
+<span class="nc" id="L645">        User user = getUser(name);</span>
+<span class="nc" id="L646">        return user.getRole();</span>
+    }
+
+    public static boolean doesUserExist(String username) {
+<span class="nc" id="L650">        User user = getUser(username);</span>
+<span class="nc" id="L651">        System.out.println(&quot;Searching for user: &quot; + username);</span>
+<span class="nc bnc" id="L652" title="All 2 branches missed.">        if(user == null){</span>
+<span class="nc" id="L653">            return false;</span>
+        } else {
+<span class="nc" id="L655">            return true;</span>
+        }
+    }
+
+    public static boolean doesUserExist(User user) {
+<span class="nc" id="L660">        User userresult = getUser(user.getUsername());</span>
+<span class="nc" id="L661">        System.out.println(&quot;Searching for user: &quot; + user.getUsername());</span>
+<span class="nc bnc" id="L662" title="All 2 branches missed.">        if(userresult == null){</span>
+<span class="nc" id="L663">            return false;</span>
+        } else {
+<span class="nc" id="L665">            return true;</span>
+        }
+    }
+
+    public static void main(String[] args) {
+
+
+<span class="nc" id="L672">        ArrayList&lt;User&gt; users = getUsers();</span>
+<span class="nc" id="L673">        users.forEach(user -&gt; user.printUser());</span>
+<span class="nc" id="L674">        User user = getUser(&quot;admin&quot;);</span>
+<span class="nc" id="L675">        user.printUser();</span>
+<span class="nc" id="L676">        addUser(&quot;Bob&quot;, &quot;Chef&quot;);</span>
+<span class="nc" id="L677">        System.out.println(doesUserExist(&quot;admin&quot;));</span>
+<span class="nc" id="L678">        System.out.println(doesUserExist(&quot;Alice&quot;));</span>
+<span class="nc" id="L679">        System.out.println(doesUserExist(&quot;Bob&quot;));</span>
+
+
+<span class="nc" id="L682">        HashMap&lt;String, String&gt; ingredients = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L683">        ingredients.putIfAbsent(&quot;Egg&quot;,&quot;5&quot;);</span>
+<span class="nc" id="L684">        ingredients.putIfAbsent(&quot;Flour&quot;,&quot;0.5 kilos&quot;);</span>
+<span class="nc" id="L685">        ingredients.putIfAbsent(&quot;Sugar&quot;,&quot;Lots&quot;);</span>
+<span class="nc" id="L686">        ingredients.putIfAbsent(&quot;Water&quot;,&quot;100ml&quot;);</span>
+<span class="nc" id="L687">        ingredients.putIfAbsent(&quot;Dry Yeast&quot;,&quot;50 grams&quot;);</span>
+<span class="nc" id="L688">        Recipe boller = new Recipe(&quot;Boller&quot;, &quot;Crack eggs into bowl. Whisk everything. &quot; +</span>
+                &quot;Add lots of sugar. Cook for a couple of minutes.&quot;, ingredients);
+
+        //addRecipe(boller);
+        //deleteRecipe(boller);
+
+        ArrayList&lt;Recipe&gt; recipes;
+<span class="nc" id="L695">        recipes = getRecipes();</span>
+<span class="nc" id="L696">        recipes.forEach(recipe -&gt; recipe.printContent());</span>
+<span class="nc" id="L697">        System.out.println(&quot;VERIFIED:&quot;);</span>
+<span class="nc" id="L698">        recipes = getVerifiedRecipes();</span>
+<span class="nc" id="L699">        recipes.forEach(recipe -&gt; recipe.printContent());</span>
+<span class="nc" id="L700">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

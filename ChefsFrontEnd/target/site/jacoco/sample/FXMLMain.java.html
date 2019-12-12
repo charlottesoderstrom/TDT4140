@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="nb"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FXMLMain.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ChefsFrontEnd</a> &gt; <a href="index.source.html" class="el_package">sample</a> &gt; <span class="el_source">FXMLMain.java</span></div><h1>FXMLMain.java</h1><pre class="source lang-java linenums">package sample;
+
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
+import java.util.HashMap;
+
+<span class="nc" id="L11">public class FXMLMain extends Application{</span>
+
+    public static Scene mainPageScene;
+    public static Scene recipePageScene;
+    public static Scene logInPageScene;
+    public static Scene signUpPage;
+    public static Scene writeRecipePage;
+
+    /**
+     * Denne klassen blir kalt av Main og starter hele applikasjonen. Oppretter alle objekter som trengs i Front-end.
+     * @param mainPageScene peker på hovedsiden.
+     * @param recipePageScene peker på recipe-siden.
+     * @param logInPageScene peker på login-siden.
+     * @param signUpPage peker på signup-siden.
+     * @param writeRecipePage peker på write-recipe-siden
+
+     */
+
+
+
+    @Override
+    public void start(Stage primaryStage) throws Exception{
+<span class="nc" id="L33">        FXMLLoader mainPageLoader = new FXMLLoader(getClass().getClassLoader().getResource(&quot;mainPage.fxml&quot;));</span>
+<span class="nc" id="L34">        Parent mainPageRoot = mainPageLoader.load();</span>
+
+<span class="nc" id="L36">        FXMLLoader recipePageLoader = new FXMLLoader(getClass().getClassLoader().getResource(&quot;recipe.fxml&quot;));</span>
+<span class="nc" id="L37">        Parent recipePageRoot = recipePageLoader.load();</span>
+
+<span class="nc" id="L39">        FXMLLoader logInPageLoader = new FXMLLoader(getClass().getClassLoader().getResource(&quot;Login.fxml&quot;));</span>
+<span class="nc" id="L40">        Parent logInPageRoot = logInPageLoader.load();</span>
+
+<span class="nc" id="L42">        FXMLLoader signUpPageLoader = new FXMLLoader(getClass().getClassLoader().getResource(&quot;signup.fxml&quot;));</span>
+<span class="nc" id="L43">        Parent signUpPageRoot = signUpPageLoader.load();</span>
+
+<span class="nc" id="L45">        FXMLLoader writeRecipePageLoader = new FXMLLoader(getClass().getClassLoader().getResource(&quot;writeRecipe.fxml&quot;));</span>
+<span class="nc" id="L46">        Parent writeRecipeRoot = writeRecipePageLoader.load();</span>
+
+
+<span class="nc" id="L49">        this.mainPageScene = new Scene(mainPageRoot);</span>
+<span class="nc" id="L50">        this.recipePageScene = new Scene(recipePageRoot);</span>
+<span class="nc" id="L51">        this.logInPageScene = new Scene(logInPageRoot);</span>
+<span class="nc" id="L52">        this.signUpPage = new Scene(signUpPageRoot);</span>
+<span class="nc" id="L53">        this.writeRecipePage = new Scene(writeRecipeRoot);</span>
+
+
+
+        /**
+         * Gir primaryStage til kontrollere.
+         * Kobler opp MainPageController til Content. RecipeController kobles opp til MainPageController.
+         * LogIn- og SignUpController får MainPageController for å kunne gi beskjeder fra seg til den.
+         */
+<span class="nc" id="L62">        MainPageController mainPageController = mainPageLoader.getController();</span>
+<span class="nc" id="L63">        RecipeController recipeController = recipePageLoader.getController();</span>
+<span class="nc" id="L64">        LogInController logInController = logInPageLoader.getController();</span>
+<span class="nc" id="L65">        SignUpController signUpController = signUpPageLoader.getController();</span>
+<span class="nc" id="L66">        WriteRecipeController writeRecipeController = writeRecipePageLoader.getController();</span>
+
+<span class="nc" id="L68">        mainPageController.setStage(primaryStage);</span>
+<span class="nc" id="L69">        recipeController.setStage(primaryStage);</span>
+<span class="nc" id="L70">        logInController.setStage(primaryStage);</span>
+<span class="nc" id="L71">        signUpController.setStage(primaryStage);</span>
+<span class="nc" id="L72">        writeRecipeController.setStage(primaryStage);</span>
+
+<span class="nc" id="L74">        mainPageController.setRecipeController(recipeController);</span>
+<span class="nc" id="L75">        mainPageController.setWriteRecipeController(writeRecipeController);</span>
+<span class="nc" id="L76">        signUpController.setMainPageController(mainPageController);</span>
+<span class="nc" id="L77">        logInController.setMainPageController(mainPageController);</span>
+<span class="nc" id="L78">        writeRecipeController.setRecipeController(recipeController);</span>
+<span class="nc" id="L79">        recipeController.setMainPageController(mainPageController);</span>
+
+<span class="nc" id="L81">        mainPageController.hidePreviousPageButton();</span>
+<span class="nc" id="L82">        mainPageController.hideChefPreviousPageButton();</span>
+
+<span class="nc" id="L84">        Content content = new Content();</span>
+<span class="nc" id="L85">        signUpController.setContent(content);</span>
+<span class="nc" id="L86">        content.setMainPageController(mainPageController);</span>
+        // Selve innlastingen av data fra database skjer her. Må kanskje flyttes?
+        // Vet ikke hvor det er tenkt å ha det..
+<span class="nc" id="L89">        content.loadRecipies();</span>
+<span class="nc" id="L90">        content.loadVerifiedRecipies();</span>
+<span class="nc" id="L91">        mainPageController.setContent(content);</span>
+
+
+        //hjelpekode
+
+        //HashMap&lt;String, String&gt; tomatsuppemappen = new HashMap&lt;&gt;();
+        //tomatsuppemappen.put(&quot;hermetiske tomater    &quot;, &quot;en boks&quot;);
+        //tomatsuppemappen.put(&quot;Hvitløk               &quot;, &quot;2 fedd&quot;);
+        //tomatsuppemappen.put(&quot;Buljong               &quot;, &quot;1&quot;);
+        //tomatsuppemappen.put(&quot;Løk                   &quot;, &quot;1 stk&quot;);
+        //tomatsuppemappen.put(&quot;Vann                  &quot;, &quot;9 dl&quot;);
+        //tomatsuppemappen.put(&quot;Makaroni              &quot;, &quot;2 dl&quot;);
+
+        //HashMap&lt;String, String&gt; mappen = new HashMap&lt;&gt;();
+        //mappen.put(&quot;saft    &quot;, &quot;2 dl&quot;);
+
+        //String tomatinstruksjon = &quot;Ha olivenolje eller en annen nøytral matolje i en gryte og fres løken på middels varme, til den er blank og myk, men uten at den tar farge. Mot slutten tilsetter du hvitløk og chili, og lar det surre med. Mengden chili og hvitløk regulerer du etter smak og behag. Tilsett tomatpureèn og la det surre med et par minutter.\n&quot; +
+        //        &quot;\n&quot; +
+        //        &quot;Tilsett de hermetiske tomatene, knus dem lett med en stekespade eller lignende, og gi suppen et oppkok. Tilsett deretter kraften og kok opp igjen. Har du ikke kraft tilgjengelig kan du fint benytte buljongterninger eller fond utblandet i vann. Det er her viktig å smake seg frem til du får ønsket smak på suppen din. Tomatsmaken skal være dominerende, og kraften skal gi ytterligere smak. Tilsett eventuelt litt sukker dersom du ønsker litt mer sødme på suppen din.\n&quot; +
+        //        &quot;\n&quot; +
+        //        &quot;La suppen småkoke til tomatene er møre og fine. Det tar ca 15-20 minutter dersom du benytter hele tomater. Benytter du hakkede tomater kan koketiden gjerne reduseres til ca 10. minutter hvis du har det travelt eller er veldig sulten. Kjør suppen med en stavmikser eller lignende, til du får en jevn suppe. Tilsett eventuelt mer vann eller kraft hvis du synes suppen blir for tykk. Smak til med nykvernet sort pepper og salt.&quot;;
+
+        //content.addRecipe(new Recipe(&quot;Tomatsuppe&quot;, tomatinstruksjon, tomatsuppemappen));
+        //content.addRecipe(new Recipe(&quot;Taco&quot;, &quot;Instruksjoner&quot;, mappen));
+        //content.addRecipe(new Recipe(&quot;Pizza&quot;, &quot;Instruksjoner&quot;, mappen));
+        //content.addRecipe(new Recipe(&quot;Sushi&quot;, &quot;Instruksjoner&quot;, mappen));
+
+
+<span class="nc" id="L119">        mainPageController.updateFxml();</span>
+<span class="nc" id="L120">        mainPageController.updateChefFxml();</span>
+
+
+        /**
+         * Applikasjonen åpner opp mainPage når den startes. Man er foreløpig ikke logget inn og skal ikke
+         * kunne få opp fanen for å legge til oppskrifter, og man skal heller ikke kunne slette oppskrifter.
+         */
+<span class="nc" id="L127">        primaryStage.setTitle(&quot;Chefs Apprentice&quot;);</span>
+<span class="nc" id="L128">        primaryStage.setScene(this.mainPageScene);</span>
+<span class="nc" id="L129">        mainPageController.hideRecipeTab();</span>
+<span class="nc" id="L130">        recipeController.hideDeleteButton();</span>
+<span class="nc" id="L131">        primaryStage.show();</span>
+<span class="nc" id="L132">    }</span>
+
+    public static void main(String[] args) {
+<span class="nc" id="L135">        launch(args);</span>
+<span class="nc" id="L136">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="nb"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Client.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ChefsFrontEnd</a> &gt; <a href="index.source.html" class="el_package">sample</a> &gt; <span class="el_source">Client.java</span></div><h1>Client.java</h1><pre class="source lang-java linenums">package sample;
+
+import java.io.*;
+import java.net.*;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
+public class Client {
+
+<span class="nc" id="L10">    public static String ip = &quot;localhost&quot;;</span>
+
+<span class="nc" id="L12">    public Client() {</span>
+<span class="nc" id="L13">        this.ip = &quot;localhost&quot;;</span>
+<span class="nc" id="L14">    }</span>
+
+<span class="nc" id="L16">    public Client(String ip) {</span>
+<span class="nc" id="L17">        this.ip = ip;</span>
+<span class="nc" id="L18">    }</span>
+
+    public static ArrayList&lt;Recipe&gt; getRecipes() {
+<span class="nc" id="L21">        ArrayList&lt;Recipe&gt; response = new ArrayList&lt;&gt;();</span>
+        // Setup connection
+        try {
+<span class="nc" id="L24">            Socket socket = new Socket(Client.ip, 4444);</span>
+<span class="nc" id="L25">            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());</span>
+<span class="nc" id="L26">            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());</span>
+            // Test getRecipes() in DBConnector
+<span class="nc" id="L28">            objectOutputStream.writeObject(&quot;1&quot;);</span>
+            // Read response
+<span class="nc" id="L30">            response = (ArrayList&lt;Recipe&gt;) objectInputStream.readObject();</span>
+<span class="nc" id="L31">            response.forEach(recipe -&gt; recipe.printContent());</span>
+<span class="nc" id="L32">            socket.close();</span>
+<span class="nc" id="L33">        } catch(Exception e) {</span>
+<span class="nc" id="L34">            e.printStackTrace();</span>
+<span class="nc" id="L35">        }</span>
+<span class="nc" id="L36">        return response;</span>
+    }
+
+    public static ArrayList&lt;Recipe&gt; getVerifiedRecipes() {
+<span class="nc" id="L40">        ArrayList&lt;Recipe&gt; response = new ArrayList&lt;&gt;();</span>
+        // Setup connection
+        try {
+<span class="nc" id="L43">            Socket socket = new Socket(Client.ip, 4444);</span>
+<span class="nc" id="L44">            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());</span>
+<span class="nc" id="L45">            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());</span>
+            // Test getRecipes() in DBConnector
+<span class="nc" id="L47">            objectOutputStream.writeObject(&quot;5&quot;);</span>
+            // Read response
+<span class="nc" id="L49">            response = (ArrayList&lt;Recipe&gt;) objectInputStream.readObject();</span>
+<span class="nc" id="L50">            response.forEach(recipe -&gt; recipe.printContent());</span>
+<span class="nc" id="L51">            socket.close();</span>
+<span class="nc" id="L52">        } catch(Exception e) {</span>
+<span class="nc" id="L53">            e.printStackTrace();</span>
+<span class="nc" id="L54">        }</span>
+<span class="nc" id="L55">        return response;</span>
+    }
+
+    public static void addRecipe(Recipe recipe) {
+        // Setup connection
+        try {
+<span class="nc" id="L61">            Socket socket = new Socket(Client.ip, 4444);</span>
+<span class="nc" id="L62">            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());</span>
+<span class="nc" id="L63">            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());</span>
+            // Test getRecipes() in DBConnector
+<span class="nc" id="L65">            objectOutputStream.writeObject(recipe);</span>
+            // Read response
+<span class="nc" id="L67">            socket.close();</span>
+<span class="nc" id="L68">        } catch(Exception e) {</span>
+<span class="nc" id="L69">            e.printStackTrace();</span>
+<span class="nc" id="L70">        }</span>
+<span class="nc" id="L71">    }</span>
+
+    public static boolean deleteRecipe(String title) {
+        // Setup connection
+<span class="nc" id="L75">        String response = &quot;&quot;;</span>
+        try {
+<span class="nc" id="L77">            Socket socket = new Socket(Client.ip, 4444);</span>
+<span class="nc" id="L78">            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());</span>
+<span class="nc" id="L79">            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());</span>
+            // Test getRecipes() in DBConnector
+<span class="nc" id="L81">            objectOutputStream.writeObject(&quot;0,&quot; + title);</span>
+<span class="nc" id="L82">            response = (String) objectInputStream.readObject();</span>
+<span class="nc" id="L83">            socket.close();</span>
+<span class="nc" id="L84">        } catch(Exception e) {</span>
+<span class="nc" id="L85">            e.printStackTrace();</span>
+<span class="nc" id="L86">        }</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (response.equals(&quot;true&quot;)) {</span>
+
+<span class="nc" id="L89">            return true;</span>
+        }
+<span class="nc" id="L91">        return false;</span>
+    }
+
+    public static ArrayList&lt;Recipe&gt; getRecipesByName(String name) {
+<span class="nc" id="L95">        ArrayList&lt;Recipe&gt; response = new ArrayList&lt;&gt;();</span>
+        // Setup connection
+        try {
+<span class="nc" id="L98">            Socket socket = new Socket(Client.ip, 4444);</span>
+<span class="nc" id="L99">            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());</span>
+<span class="nc" id="L100">            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());</span>
+            // Test getRecipes() in DBConnector
+<span class="nc" id="L102">            objectOutputStream.writeObject(&quot;2, &quot; + name);</span>
+            // Read response
+<span class="nc" id="L104">            response = (ArrayList&lt;Recipe&gt;) objectInputStream.readObject();</span>
+<span class="nc" id="L105">            response.forEach(recipe -&gt; recipe.printContent());</span>
+<span class="nc" id="L106">            socket.close();</span>
+<span class="nc" id="L107">        } catch(Exception e) {</span>
+<span class="nc" id="L108">            e.printStackTrace();</span>
+<span class="nc" id="L109">        }</span>
+<span class="nc" id="L110">        return response;// Setup connection</span>
+
+
+    }
+
+    public static ArrayList&lt;Recipe&gt; getRecipeByIngredients(String search) {
+<span class="nc" id="L116">        ArrayList&lt;Recipe&gt; response = new ArrayList&lt;&gt;();</span>
+        // Setup connection
+        try {
+<span class="nc" id="L119">            Socket socket = new Socket(Client.ip, 4444);</span>
+<span class="nc" id="L120">            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());</span>
+<span class="nc" id="L121">            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());</span>
+            // Test getRecipes() in DBConnector
+<span class="nc" id="L123">            objectOutputStream.writeObject(&quot;3, &quot; + search);</span>
+            // Read response
+<span class="nc" id="L125">            response = (ArrayList&lt;Recipe&gt;) objectInputStream.readObject();</span>
+<span class="nc" id="L126">            response.forEach(recipe -&gt; recipe.printContent());</span>
+<span class="nc" id="L127">            socket.close();</span>
+<span class="nc" id="L128">        } catch(Exception e) {</span>
+<span class="nc" id="L129">            e.printStackTrace();</span>
+<span class="nc" id="L130">        }</span>
+<span class="nc" id="L131">        return response;</span>
+    }
+
+    public static ArrayList&lt;Recipe&gt; getVerifiedRecipesByIngredients(String search) {
+<span class="nc" id="L135">        ArrayList&lt;Recipe&gt; verifiedResponse = new ArrayList&lt;&gt;();</span>
+        try {
+<span class="nc" id="L137">            ArrayList&lt;Recipe&gt; response = getRecipeByIngredients(search);</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">            for (Recipe recipe : response) {</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">                if (recipe.isVerified()) {</span>
+<span class="nc" id="L140">                    verifiedResponse.add(recipe);</span>
+                }
+<span class="nc" id="L142">            }</span>
+<span class="nc" id="L143">        } catch(Exception e) {</span>
+<span class="nc" id="L144">            e.printStackTrace();</span>
+<span class="nc" id="L145">        }</span>
+<span class="nc" id="L146">        return verifiedResponse;</span>
+    }
+
+    public static User getUser(String username) {
+<span class="nc" id="L150">        User responseUser = null;</span>
+        // Setup connection
+        try {
+<span class="nc" id="L153">            Socket socket = new Socket(Client.ip, 4444);</span>
+<span class="nc" id="L154">            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());</span>
+<span class="nc" id="L155">            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());</span>
+            // Test getRecipes() in DBConnector
+<span class="nc" id="L157">            objectOutputStream.writeObject(&quot;4, &quot; + username);</span>
+            // Read response
+<span class="nc" id="L159">            responseUser = (User) objectInputStream.readObject();</span>
+            //responseUser.forEach(user -&gt; user.printUser());
+<span class="nc" id="L161">            socket.close();</span>
+<span class="nc" id="L162">        } catch(Exception e) {</span>
+<span class="nc" id="L163">            e.printStackTrace();</span>
+<span class="nc" id="L164">        }</span>
+<span class="nc" id="L165">        return responseUser;</span>
+    }
+
+    public static boolean registerUser(User user){
+<span class="nc" id="L169">        String response = &quot;&quot;;</span>
+        // Setup connection
+        try {
+<span class="nc" id="L172">            Socket socket = new Socket(Client.ip, 4444);</span>
+<span class="nc" id="L173">            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());</span>
+<span class="nc" id="L174">            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());</span>
+            // Test getRecipes() in DBConnector
+<span class="nc" id="L176">            objectOutputStream.writeObject(user);</span>
+            // Read response
+<span class="nc" id="L178">            response = (String) objectInputStream.readObject();</span>
+<span class="nc" id="L179">            socket.close();</span>
+<span class="nc" id="L180">        } catch(Exception e) {</span>
+<span class="nc" id="L181">            e.printStackTrace();</span>
+<span class="nc" id="L182">        }</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">        if (response.equals(&quot;true&quot;)){</span>
+<span class="nc" id="L184">            return true;</span>
+        }
+<span class="nc" id="L186">        return false;</span>
+
+    }
+
+    public static void addManyRecipes(int numberOfRecipes) {
+        // Setup connection
+        try {
+<span class="nc" id="L193">            Socket socket = new Socket(Client.ip, 4444);</span>
+<span class="nc" id="L194">            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());</span>
+<span class="nc" id="L195">            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());</span>
+<span class="nc" id="L196">            objectOutputStream.writeObject(numberOfRecipes);</span>
+<span class="nc" id="L197">            socket.close();</span>
+<span class="nc" id="L198">        } catch(Exception e) {</span>
+<span class="nc" id="L199">            e.printStackTrace();</span>
+<span class="nc" id="L200">        }</span>
+<span class="nc" id="L201">    }</span>
+
+
+
+    // Test addRecipe()
+        /*
+        HashMap&lt;String, String&gt; ingredients = new HashMap&lt;&gt;();
+        ingredients.putIfAbsent(&quot;Egg&quot;,&quot;3&quot;);
+        ingredients.putIfAbsent(&quot;Salt&quot;,&quot;a tablespoon&quot;);
+        ingredients.putIfAbsent(&quot;Pepper&quot;,&quot;a tablespoon&quot;);
+        ingredients.putIfAbsent(&quot;Water&quot;,&quot;100ml&quot;);
+        ingredients.putIfAbsent(&quot;Sausage&quot;,&quot;1&quot;);
+        ingredients.putIfAbsent(&quot;Milk&quot;,&quot;2&quot;);
+        ingredients.putIfAbsent(&quot;Sugar&quot;,&quot;4&quot;);
+        ingredients.putIfAbsent(&quot;Sugar&quot;,&quot;4&quot;);
+        sample.Recipe newrecipe = new sample.Recipe(&quot;Croissant&quot;, &quot;Crack eggs into bowl. Whisk everything. &quot; +
+                &quot;Add seasoning to taste. Cook for a couple of minutes. Use a lot of butter.&quot;, ingredients);
+        objectOutputStream.writeObject(newrecipe);
+        */
+
+
+    public static void main(String[] args) throws IOException, UnknownHostException, ClassNotFoundException{
+<span class="nc" id="L223">        getVerifiedRecipes();</span>
+
+<span class="nc" id="L225">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

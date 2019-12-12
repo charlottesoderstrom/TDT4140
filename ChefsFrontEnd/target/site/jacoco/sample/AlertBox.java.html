@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="nb"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AlertBox.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ChefsFrontEnd</a> &gt; <a href="index.source.html" class="el_package">sample</a> &gt; <span class="el_source">AlertBox.java</span></div><h1>AlertBox.java</h1><pre class="source lang-java linenums">package sample;
+
+import javafx.stage.*;
+import javafx.scene.*;
+import javafx.scene.layout.*;
+import javafx.scene.control.*;
+import javafx.geometry.*;
+
+<span class="nc" id="L9">public class AlertBox {</span>
+
+    public static void display(String title, String message) {
+<span class="nc" id="L12">        Stage window = new Stage();</span>
+
+        //Block events to other windows
+<span class="nc" id="L15">        window.initModality(Modality.APPLICATION_MODAL);</span>
+<span class="nc" id="L16">        window.setTitle(title);</span>
+<span class="nc" id="L17">        window.setMinWidth(450);</span>
+<span class="nc" id="L18">        window.setMinHeight(250);</span>
+
+<span class="nc" id="L20">        Label label = new Label();</span>
+<span class="nc" id="L21">        label.setText(message);</span>
+<span class="nc" id="L22">        Button closeButton = new Button(&quot;Close this window&quot;);</span>
+<span class="nc" id="L23">        closeButton.setOnAction(e -&gt; window.close());</span>
+
+<span class="nc" id="L25">        VBox layout = new VBox(10);</span>
+<span class="nc" id="L26">        layout.getChildren().addAll(label, closeButton);</span>
+<span class="nc" id="L27">        layout.setAlignment(Pos.CENTER);</span>
+
+        //Display window and wait for it to be closed before returning
+<span class="nc" id="L30">        Scene scene = new Scene(layout);</span>
+<span class="nc" id="L31">        window.setScene(scene);</span>
+<span class="nc" id="L32">        window.showAndWait();</span>
+<span class="nc" id="L33">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>
